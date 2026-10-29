@@ -20,6 +20,9 @@ class CMAI_PT_main(bpy.types.Panel):
         row.prop(scene, "cmai_start")
         row.prop(scene, "cmai_end")
         box.operator("cmai.extract_frames", icon='RENDER_ANIMATION')
+        box.label(text="Milestone 2: DeepLabCut Setup")
+        box.prop(scene, "cmai_dlc_output")
+        box.operator("cmai.create_dlc_project", icon='TRACKER')
         layout.separator()
         layout.label(text="Later milestones", icon='INFO')
         for label in ("Run AI Tracking", "Map Bones", "Generate Animation", "Export FBX", "Export GLB"):

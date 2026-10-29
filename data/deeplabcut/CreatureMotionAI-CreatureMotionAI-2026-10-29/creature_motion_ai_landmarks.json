@@ -1,0 +1,28 @@
+{
+  "bodyparts": [
+    "head",
+    "neck",
+    "shoulder_center",
+    "spine_center",
+    "hip_center",
+    "tail_base",
+    "tail_middle",
+    "tail_tip",
+    "front_left_shoulder",
+    "front_left_elbow",
+    "front_left_wrist",
+    "front_left_foot",
+    "front_right_shoulder",
+    "front_right_elbow",
+    "front_right_wrist",
+    "front_right_foot",
+    "rear_left_hip",
+    "rear_left_knee",
+    "rear_left_ankle",
+    "rear_left_foot",
+    "rear_right_hip",
+    "rear_right_knee",
+    "rear_right_ankle",
+    "rear_right_foot"
+  ]
+}

@@ -27,5 +27,6 @@ The extractor writes numbered PNGs, `metadata.json`, and never modifies the sour
 ## Milestone status
 
 - Complete: add-on registration, sidebar, input validation, frame extraction, metadata.
+- Milestone 2 in progress: DeepLabCut project creation and basilisk landmark schema.
 - Not implemented yet: DeepLabCut project/training, landmark preview, rig mapping, 3D reconstruction, animation baking, cleanup, export.
 
