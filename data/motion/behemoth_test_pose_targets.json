@@ -1,0 +1,8 @@
+{
+  "format": "creature_motion_ai.pose_targets.v1",
+  "action": "CMAI_Test_Action",
+  "frames": [
+    {"frame": 1, "targets": [{"bone": "Body_01", "rotation_z": 0.0}]},
+    {"frame": 2, "targets": [{"bone": "Body_01", "rotation_z": 0.15}]}
+  ]
+}

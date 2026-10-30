@@ -10,17 +10,30 @@ bl_info = {
     "category": "Animation",
 }
 
-import bpy
-from . import operators, panel
+try:
+    import bpy
+except ModuleNotFoundError:  # Allow portable analysis/solver modules outside Blender.
+    bpy = None
+
+if bpy is not None:
+    from . import operators, panel, skeleton_operator, animation_operator
 
 
 def register():
+    if bpy is None:
+        raise RuntimeError("Blender is required to register the add-on")
     operators.register()
+    skeleton_operator.register()
+    animation_operator.register()
     panel.register()
 
 
 def unregister():
+    if bpy is None:
+        return
     panel.unregister()
+    skeleton_operator.unregister()
+    animation_operator.unregister()
     operators.unregister()
 
 

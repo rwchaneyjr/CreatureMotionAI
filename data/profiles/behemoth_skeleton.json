@@ -1,0 +1,1278 @@
+{
+  "armature": "CrimsonSpineBehemoth_Rig",
+  "bones": [
+    {
+      "name": "Root",
+      "parent": null,
+      "children": [
+        "Body_01",
+        "Tail_01"
+      ],
+      "head": [
+        0.0,
+        -0.30000001192092896,
+        -0.23375296592712402
+      ],
+      "tail": [
+        0.0,
+        -0.08883635699748993,
+        -0.23375296592712402
+      ],
+      "length": 0.21116365492343903,
+      "use_deform": true,
+      "category": "other"
+    },
+    {
+      "name": "Body_01",
+      "parent": "Root",
+      "children": [
+        "Body_02",
+        "Leg_Rear.L_01",
+        "Leg_Rear.R_01"
+      ],
+      "head": [
+        0.0,
+        -0.18000000715255737,
+        -0.06000000238418579
+      ],
+      "tail": [
+        1.1600833014279257e-15,
+        -0.34078288078308105,
+        -0.03162654861807823
+      ],
+      "length": 0.16326719522476196,
+      "use_deform": true,
+      "category": "axial"
+    },
+    {
+      "name": "Body_02",
+      "parent": "Body_01",
+      "children": [
+        "Body_03",
+        "Leg_MidRear.L_01",
+        "Leg_MidRear.R_01"
+      ],
+      "head": [
+        -2.1229771209768135e-15,
+        -0.3499999940395355,
+        -0.03000001423060894
+      ],
+      "tail": [
+        6.19080389166124e-14,
+        -0.5299029350280762,
+        -0.018755989149212837
+      ],
+      "length": 0.18025392293930054,
+      "use_deform": true,
+      "category": "axial"
+    },
+    {
+      "name": "Body_03",
+      "parent": "Body_02",
+      "children": [
+        "Head_01",
+        "Leg_Front.L_01",
+        "Leg_Front.R_01",
+        "Leg_MidFront.L_01",
+        "Leg_MidFront.R_01"
+      ],
+      "head": [
+        5.447657502508606e-14,
+        -0.5100000500679016,
+        -0.019999919459223747
+      ],
+      "tail": [
+        1.2639927082433444e-14,
+        -0.6746152639389038,
+        0.024591384455561638
+      ],
+      "length": 0.17054778337478638,
+      "use_deform": true,
+      "category": "axial"
+    },
+    {
+      "name": "Head_01",
+      "parent": "Body_03",
+      "children": [
+        "Head_02"
+      ],
+      "head": [
+        1.5863273693760005e-14,
+        -0.6499999761581421,
+        0.017923563718795776
+      ],
+      "tail": [
+        9.210866661404915e-14,
+        -0.7400000691413879,
+        0.005859178490936756
+      ],
+      "length": 0.09080502390861511,
+      "use_deform": true,
+      "category": "head_neck"
+    },
+    {
+      "name": "Head_02",
+      "parent": "Head_01",
+      "children": [],
+      "head": [
+        8.93180115372344e-14,
+        -0.7400000691413879,
+        0.005859158467501402
+      ],
+      "tail": [
+        1.2421955011918812e-13,
+        -0.8306699991226196,
+        0.010811757296323776
+      ],
+      "length": 0.0908050611615181,
+      "use_deform": true,
+      "category": "head_neck"
+    },
+    {
+      "name": "Leg_Front.L_01",
+      "parent": "Body_03",
+      "children": [
+        "Leg_Front.L_02"
+      ],
+      "head": [
+        0.10999999940395355,
+        -0.6399999856948853,
+        -0.04499971121549606
+      ],
+      "tail": [
+        0.1650000512599945,
+        -0.731486976146698,
+        -0.10800540447235107
+      ],
+      "length": 0.12395371496677399,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_Front.L_02",
+      "parent": "Leg_Front.L_01",
+      "children": [
+        "Leg_Front.L_03"
+      ],
+      "head": [
+        0.1650000512599945,
+        -0.731486976146698,
+        -0.10800540447235107
+      ],
+      "tail": [
+        0.1550000160932541,
+        -0.8337748646736145,
+        -0.17688703536987305
+      ],
+      "length": 0.1237230896949768,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_Front.L_03",
+      "parent": "Leg_Front.L_02",
+      "children": [],
+      "head": [
+        0.1550000160932541,
+        -0.8337748646736145,
+        -0.17688703536987305
+      ],
+      "tail": [
+        0.18787913024425507,
+        -0.9471748471260071,
+        -0.2138586938381195
+      ],
+      "length": 0.12372327595949173,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_Front.R_01",
+      "parent": "Body_03",
+      "children": [
+        "Leg_Front.R_02"
+      ],
+      "head": [
+        -0.10999999940395355,
+        -0.6399999856948853,
+        -0.044999707490205765
+      ],
+      "tail": [
+        -0.1650000512599945,
+        -0.7281515002250671,
+        -0.10457491874694824
+      ],
+      "length": 0.11976994574069977,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_Front.R_02",
+      "parent": "Leg_Front.R_01",
+      "children": [
+        "Leg_Front.R_03"
+      ],
+      "head": [
+        -0.1650000512599945,
+        -0.7281515002250671,
+        -0.10457491874694824
+      ],
+      "tail": [
+        -0.1550000011920929,
+        -0.8399258852005005,
+        -0.17849889397621155
+      ],
+      "length": 0.13438068330287933,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_Front.R_03",
+      "parent": "Leg_Front.R_02",
+      "children": [],
+      "head": [
+        -0.1550000011920929,
+        -0.8399258852005005,
+        -0.17849889397621155
+      ],
+      "tail": [
+        -0.21286576986312866,
+        -0.9454926252365112,
+        -0.2382102906703949
+      ],
+      "length": 0.13438065350055695,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_MidFront.L_01",
+      "parent": "Body_03",
+      "children": [
+        "Leg_MidFront.L_02"
+      ],
+      "head": [
+        0.18000000715255737,
+        -0.49000003933906555,
+        -0.03499986603856087
+      ],
+      "tail": [
+        0.2799999713897705,
+        -0.5322964191436768,
+        -0.11037647724151611
+      ],
+      "length": 0.13217619061470032,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_MidFront.L_02",
+      "parent": "Leg_MidFront.L_01",
+      "children": [
+        "Leg_MidFront.L_03"
+      ],
+      "head": [
+        0.2799999713897705,
+        -0.5322964191436768,
+        -0.11037647724151611
+      ],
+      "tail": [
+        0.36500006914138794,
+        -0.5709153413772583,
+        -0.15225481986999512
+      ],
+      "length": 0.10232405364513397,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_MidFront.L_03",
+      "parent": "Leg_MidFront.L_02",
+      "children": [],
+      "head": [
+        0.36500006914138794,
+        -0.5709153413772583,
+        -0.15225481986999512
+      ],
+      "tail": [
+        0.3941345512866974,
+        -0.6615540385246277,
+        -0.18975220620632172
+      ],
+      "length": 0.10232404619455338,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_MidFront.R_01",
+      "parent": "Body_03",
+      "children": [
+        "Leg_MidFront.R_02"
+      ],
+      "head": [
+        -0.18000000715255737,
+        -0.4899999797344208,
+        -0.034999869763851166
+      ],
+      "tail": [
+        -0.2800000309944153,
+        -0.5287208557128906,
+        -0.11331351101398468
+      ],
+      "length": 0.1327865570783615,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_MidFront.R_02",
+      "parent": "Leg_MidFront.R_01",
+      "children": [
+        "Leg_MidFront.R_03"
+      ],
+      "head": [
+        -0.2800000309944153,
+        -0.5287208557128906,
+        -0.11331351101398468
+      ],
+      "tail": [
+        -0.36500006914138794,
+        -0.5786578059196472,
+        -0.15577323734760284
+      ],
+      "length": 0.10733825713396072,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_MidFront.R_03",
+      "parent": "Leg_MidFront.R_02",
+      "children": [],
+      "head": [
+        -0.36500006914138794,
+        -0.5786578059196472,
+        -0.15577323734760284
+      ],
+      "tail": [
+        -0.39635738730430603,
+        -0.6751481294631958,
+        -0.19081443548202515
+      ],
+      "length": 0.1073383167386055,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_MidRear.L_01",
+      "parent": "Body_02",
+      "children": [
+        "Leg_MidRear.L_02"
+      ],
+      "head": [
+        0.1850000023841858,
+        -0.3199999928474426,
+        -0.030000021681189537
+      ],
+      "tail": [
+        0.3349999785423279,
+        -0.33408844470977783,
+        -0.10044771432876587
+      ],
+      "length": 0.16631688177585602,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_MidRear.L_02",
+      "parent": "Leg_MidRear.L_01",
+      "children": [
+        "Leg_MidRear.L_03"
+      ],
+      "head": [
+        0.3349999785423279,
+        -0.33408844470977783,
+        -0.10044771432876587
+      ],
+      "tail": [
+        0.4300000071525574,
+        -0.3898528814315796,
+        -0.16386745870113373
+      ],
+      "length": 0.12710897624492645,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_MidRear.L_03",
+      "parent": "Leg_MidRear.L_02",
+      "children": [],
+      "head": [
+        0.4300000071525574,
+        -0.3898528814315796,
+        -0.16386745870113373
+      ],
+      "tail": [
+        0.5492616295814514,
+        -0.43241560459136963,
+        -0.1749042272567749
+      ],
+      "length": 0.1271091103553772,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_MidRear.R_01",
+      "parent": "Body_02",
+      "children": [
+        "Leg_MidRear.R_02"
+      ],
+      "head": [
+        -0.1850000023841858,
+        -0.2948949933052063,
+        -0.03043202869594097
+      ],
+      "tail": [
+        -0.33500003814697266,
+        -0.3320719301700592,
+        -0.09872674196958542
+      ],
+      "length": 0.16895636916160583,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_MidRear.R_02",
+      "parent": "Leg_MidRear.R_01",
+      "children": [
+        "Leg_MidRear.R_03"
+      ],
+      "head": [
+        -0.33500003814697266,
+        -0.3320719301700592,
+        -0.09872674196958542
+      ],
+      "tail": [
+        -0.43000006675720215,
+        -0.38598334789276123,
+        -0.1614324450492859
+      ],
+      "length": 0.12594999372959137,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_MidRear.R_03",
+      "parent": "Leg_MidRear.R_02",
+      "children": [],
+      "head": [
+        -0.43000006675720215,
+        -0.38598334789276123,
+        -0.1614324450492859
+      ],
+      "tail": [
+        -0.4981589615345001,
+        -0.48143795132637024,
+        -0.2073264867067337
+      ],
+      "length": 0.12595011293888092,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_Rear.L_01",
+      "parent": "Body_01",
+      "children": [
+        "Leg_Rear.L_02"
+      ],
+      "head": [
+        0.15000000596046448,
+        -0.20500004291534424,
+        -0.015000193379819393
+      ],
+      "tail": [
+        0.29499998688697815,
+        -0.12885354459285736,
+        -0.0342036597430706
+      ],
+      "length": 0.16490012407302856,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_Rear.L_02",
+      "parent": "Leg_Rear.L_01",
+      "children": [
+        "Leg_Rear.L_03"
+      ],
+      "head": [
+        0.29499998688697815,
+        -0.12885354459285736,
+        -0.0342036597430706
+      ],
+      "tail": [
+        0.42500004172325134,
+        -0.01685800403356552,
+        -0.10305695235729218
+      ],
+      "length": 0.18488851189613342,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_Rear.L_03",
+      "parent": "Leg_Rear.L_02",
+      "children": [],
+      "head": [
+        0.42500001192092896,
+        -0.01685798354446888,
+        -0.10305695980787277
+      ],
+      "tail": [
+        0.6006724238395691,
+        0.005895162001252174,
+        -0.15602199733257294
+      ],
+      "length": 0.1848885416984558,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_Rear.R_01",
+      "parent": "Body_01",
+      "children": [
+        "Leg_Rear.R_02"
+      ],
+      "head": [
+        -0.15000000596046448,
+        -0.20500004291534424,
+        -0.015000198036432266
+      ],
+      "tail": [
+        -0.29500001668930054,
+        -0.13882654905319214,
+        -0.041362129151821136
+      ],
+      "length": 0.16155149042606354,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_Rear.R_02",
+      "parent": "Leg_Rear.R_01",
+      "children": [
+        "Leg_Rear.R_03"
+      ],
+      "head": [
+        -0.29500001668930054,
+        -0.13882654905319214,
+        -0.041362129151821136
+      ],
+      "tail": [
+        -0.42500007152557373,
+        -0.018035009503364563,
+        -0.1042669415473938
+      ],
+      "length": 0.18827535212039948,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Leg_Rear.R_03",
+      "parent": "Leg_Rear.R_02",
+      "children": [],
+      "head": [
+        -0.42500007152557373,
+        -0.018035009503364563,
+        -0.1042669415473938
+      ],
+      "tail": [
+        -0.6055299043655396,
+        0.010281151160597801,
+        -0.1495969146490097
+      ],
+      "length": 0.18827536702156067,
+      "use_deform": true,
+      "category": "limb"
+    },
+    {
+      "name": "Tail_01",
+      "parent": "Root",
+      "children": [
+        "Tail_02"
+      ],
+      "head": [
+        0.0,
+        -0.18000000715255737,
+        -0.06000000238418579
+      ],
+      "tail": [
+        0.0,
+        -0.030000001192092896,
+        -0.06000000238418579
+      ],
+      "length": 0.15000000596046448,
+      "use_deform": true,
+      "category": "axial"
+    },
+    {
+      "name": "Tail_02",
+      "parent": "Tail_01",
+      "children": [
+        "Tail_03"
+      ],
+      "head": [
+        0.0,
+        -0.030000001192092896,
+        -0.06000000238418579
+      ],
+      "tail": [
+        0.0,
+        0.10999999940395355,
+        -0.06499999761581421
+      ],
+      "length": 0.1400892585515976,
+      "use_deform": true,
+      "category": "axial"
+    },
+    {
+      "name": "Tail_03",
+      "parent": "Tail_02",
+      "children": [
+        "Tail_04"
+      ],
+      "head": [
+        5.554367200247647e-16,
+        0.10999999940395355,
+        -0.06499999761581421
+      ],
+      "tail": [
+        4.307749636499683e-16,
+        0.25,
+        -0.07500000298023224
+      ],
+      "length": 0.14035668969154358,
+      "use_deform": true,
+      "category": "axial"
+    },
+    {
+      "name": "Tail_04",
+      "parent": "Tail_03",
+      "children": [
+        "Tail_05"
+      ],
+      "head": [
+        8.406862881992015e-17,
+        0.2500000298023224,
+        -0.07500000298023224
+      ],
+      "tail": [
+        1.152535629062959e-16,
+        0.3900001049041748,
+        -0.07999999821186066
+      ],
+      "length": 0.14008934795856476,
+      "use_deform": true,
+      "category": "axial"
+    },
+    {
+      "name": "Tail_05",
+      "parent": "Tail_04",
+      "children": [
+        "Tail_06"
+      ],
+      "head": [
+        2.7188556937660308e-15,
+        0.3900001049041748,
+        -0.07999999821186066
+      ],
+      "tail": [
+        2.9807059767725675e-15,
+        0.5300000309944153,
+        -0.08500000089406967
+      ],
+      "length": 0.14008918404579163,
+      "use_deform": true,
+      "category": "axial"
+    },
+    {
+      "name": "Tail_06",
+      "parent": "Tail_05",
+      "children": [
+        "Tail_07"
+      ],
+      "head": [
+        9.744846183991156e-16,
+        0.5300000309944153,
+        -0.08500000834465027
+      ],
+      "tail": [
+        8.611562157981409e-16,
+        0.6700000762939453,
+        -0.07426803559064865
+      ],
+      "length": 0.14041079580783844,
+      "use_deform": true,
+      "category": "axial"
+    },
+    {
+      "name": "Tail_07",
+      "parent": "Tail_06",
+      "children": [
+        "Tail_08"
+      ],
+      "head": [
+        1.7177568766477114e-16,
+        0.6700000762939453,
+        -0.07426803559064865
+      ],
+      "tail": [
+        4.162024500067277e-16,
+        0.8100000619888306,
+        -0.05513004958629608
+      ],
+      "length": 0.14130201935768127,
+      "use_deform": true,
+      "category": "axial"
+    },
+    {
+      "name": "Tail_08",
+      "parent": "Tail_07",
+      "children": [],
+      "head": [
+        6.347602438043867e-16,
+        0.8100000619888306,
+        -0.05513003468513489
+      ],
+      "tail": [
+        1.0691329269582584e-16,
+        0.9464126825332642,
+        -0.09197923541069031
+      ],
+      "length": 0.14130204916000366,
+      "use_deform": true,
+      "category": "axial"
+    }
+  ],
+  "chains": [
+    {
+      "root": "Root",
+      "bones": [
+        "Root",
+        "Body_01"
+      ],
+      "category": "other"
+    },
+    {
+      "root": "Root",
+      "bones": [
+        "Root",
+        "Tail_01",
+        "Tail_02",
+        "Tail_03",
+        "Tail_04",
+        "Tail_05",
+        "Tail_06",
+        "Tail_07",
+        "Tail_08"
+      ],
+      "category": "other"
+    },
+    {
+      "root": "Body_01",
+      "bones": [
+        "Body_01",
+        "Body_02"
+      ],
+      "category": "axial"
+    },
+    {
+      "root": "Body_01",
+      "bones": [
+        "Body_01",
+        "Leg_Rear.L_01",
+        "Leg_Rear.L_02",
+        "Leg_Rear.L_03"
+      ],
+      "category": "axial"
+    },
+    {
+      "root": "Body_01",
+      "bones": [
+        "Body_01",
+        "Leg_Rear.R_01",
+        "Leg_Rear.R_02",
+        "Leg_Rear.R_03"
+      ],
+      "category": "axial"
+    },
+    {
+      "root": "Body_02",
+      "bones": [
+        "Body_02",
+        "Body_03"
+      ],
+      "category": "axial"
+    },
+    {
+      "root": "Body_02",
+      "bones": [
+        "Body_02",
+        "Leg_MidRear.L_01",
+        "Leg_MidRear.L_02",
+        "Leg_MidRear.L_03"
+      ],
+      "category": "axial"
+    },
+    {
+      "root": "Body_02",
+      "bones": [
+        "Body_02",
+        "Leg_MidRear.R_01",
+        "Leg_MidRear.R_02",
+        "Leg_MidRear.R_03"
+      ],
+      "category": "axial"
+    },
+    {
+      "root": "Body_03",
+      "bones": [
+        "Body_03",
+        "Head_01",
+        "Head_02"
+      ],
+      "category": "axial"
+    },
+    {
+      "root": "Body_03",
+      "bones": [
+        "Body_03",
+        "Leg_Front.L_01",
+        "Leg_Front.L_02",
+        "Leg_Front.L_03"
+      ],
+      "category": "axial"
+    },
+    {
+      "root": "Body_03",
+      "bones": [
+        "Body_03",
+        "Leg_Front.R_01",
+        "Leg_Front.R_02",
+        "Leg_Front.R_03"
+      ],
+      "category": "axial"
+    },
+    {
+      "root": "Body_03",
+      "bones": [
+        "Body_03",
+        "Leg_MidFront.L_01",
+        "Leg_MidFront.L_02",
+        "Leg_MidFront.L_03"
+      ],
+      "category": "axial"
+    },
+    {
+      "root": "Body_03",
+      "bones": [
+        "Body_03",
+        "Leg_MidFront.R_01",
+        "Leg_MidFront.R_02",
+        "Leg_MidFront.R_03"
+      ],
+      "category": "axial"
+    },
+    {
+      "root": "Head_01",
+      "bones": [
+        "Head_01",
+        "Head_02"
+      ],
+      "category": "head_neck"
+    },
+    {
+      "root": "Leg_Front.L_01",
+      "bones": [
+        "Leg_Front.L_01",
+        "Leg_Front.L_02",
+        "Leg_Front.L_03"
+      ],
+      "category": "limb"
+    },
+    {
+      "root": "Leg_Front.R_01",
+      "bones": [
+        "Leg_Front.R_01",
+        "Leg_Front.R_02",
+        "Leg_Front.R_03"
+      ],
+      "category": "limb"
+    },
+    {
+      "root": "Leg_MidFront.L_01",
+      "bones": [
+        "Leg_MidFront.L_01",
+        "Leg_MidFront.L_02",
+        "Leg_MidFront.L_03"
+      ],
+      "category": "limb"
+    },
+    {
+      "root": "Leg_MidFront.R_01",
+      "bones": [
+        "Leg_MidFront.R_01",
+        "Leg_MidFront.R_02",
+        "Leg_MidFront.R_03"
+      ],
+      "category": "limb"
+    },
+    {
+      "root": "Leg_MidRear.L_01",
+      "bones": [
+        "Leg_MidRear.L_01",
+        "Leg_MidRear.L_02",
+        "Leg_MidRear.L_03"
+      ],
+      "category": "limb"
+    },
+    {
+      "root": "Leg_MidRear.R_01",
+      "bones": [
+        "Leg_MidRear.R_01",
+        "Leg_MidRear.R_02",
+        "Leg_MidRear.R_03"
+      ],
+      "category": "limb"
+    },
+    {
+      "root": "Leg_Rear.L_01",
+      "bones": [
+        "Leg_Rear.L_01",
+        "Leg_Rear.L_02",
+        "Leg_Rear.L_03"
+      ],
+      "category": "limb"
+    },
+    {
+      "root": "Leg_Rear.R_01",
+      "bones": [
+        "Leg_Rear.R_01",
+        "Leg_Rear.R_02",
+        "Leg_Rear.R_03"
+      ],
+      "category": "limb"
+    },
+    {
+      "root": "Tail_01",
+      "bones": [
+        "Tail_01",
+        "Tail_02",
+        "Tail_03",
+        "Tail_04",
+        "Tail_05",
+        "Tail_06",
+        "Tail_07",
+        "Tail_08"
+      ],
+      "category": "axial"
+    }
+  ],
+  "format": "creature_motion_ai.skeleton_profile.v1",
+  "notes": "Generated from the armature hierarchy; mapping is intentionally unresolved.",
+  "mapping": {
+    "landmark_to_chain": {},
+    "chain_assignments": [
+      {
+        "chain": [
+          "Root",
+          "Body_01"
+        ],
+        "suggestion": {
+          "role": "unclassified",
+          "side": null
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Root",
+          "Tail_01",
+          "Tail_02",
+          "Tail_03",
+          "Tail_04",
+          "Tail_05",
+          "Tail_06",
+          "Tail_07",
+          "Tail_08"
+        ],
+        "suggestion": {
+          "role": "unclassified",
+          "side": null
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Body_01",
+          "Body_02"
+        ],
+        "suggestion": {
+          "role": "body",
+          "side": null
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Body_01",
+          "Leg_Rear.L_01",
+          "Leg_Rear.L_02",
+          "Leg_Rear.L_03"
+        ],
+        "suggestion": {
+          "role": "body",
+          "side": null
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Body_01",
+          "Leg_Rear.R_01",
+          "Leg_Rear.R_02",
+          "Leg_Rear.R_03"
+        ],
+        "suggestion": {
+          "role": "body",
+          "side": null
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Body_02",
+          "Body_03"
+        ],
+        "suggestion": {
+          "role": "body",
+          "side": null
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Body_02",
+          "Leg_MidRear.L_01",
+          "Leg_MidRear.L_02",
+          "Leg_MidRear.L_03"
+        ],
+        "suggestion": {
+          "role": "body",
+          "side": null
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Body_02",
+          "Leg_MidRear.R_01",
+          "Leg_MidRear.R_02",
+          "Leg_MidRear.R_03"
+        ],
+        "suggestion": {
+          "role": "body",
+          "side": null
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Body_03",
+          "Head_01",
+          "Head_02"
+        ],
+        "suggestion": {
+          "role": "body",
+          "side": null
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Body_03",
+          "Leg_Front.L_01",
+          "Leg_Front.L_02",
+          "Leg_Front.L_03"
+        ],
+        "suggestion": {
+          "role": "body",
+          "side": null
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Body_03",
+          "Leg_Front.R_01",
+          "Leg_Front.R_02",
+          "Leg_Front.R_03"
+        ],
+        "suggestion": {
+          "role": "body",
+          "side": null
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Body_03",
+          "Leg_MidFront.L_01",
+          "Leg_MidFront.L_02",
+          "Leg_MidFront.L_03"
+        ],
+        "suggestion": {
+          "role": "body",
+          "side": null
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Body_03",
+          "Leg_MidFront.R_01",
+          "Leg_MidFront.R_02",
+          "Leg_MidFront.R_03"
+        ],
+        "suggestion": {
+          "role": "body",
+          "side": null
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Head_01",
+          "Head_02"
+        ],
+        "suggestion": {
+          "role": "head_neck",
+          "side": null
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Leg_Front.L_01",
+          "Leg_Front.L_02",
+          "Leg_Front.L_03"
+        ],
+        "suggestion": {
+          "role": "limb",
+          "side": "left"
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Leg_Front.R_01",
+          "Leg_Front.R_02",
+          "Leg_Front.R_03"
+        ],
+        "suggestion": {
+          "role": "limb",
+          "side": "right"
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Leg_MidFront.L_01",
+          "Leg_MidFront.L_02",
+          "Leg_MidFront.L_03"
+        ],
+        "suggestion": {
+          "role": "limb",
+          "side": "left"
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Leg_MidFront.R_01",
+          "Leg_MidFront.R_02",
+          "Leg_MidFront.R_03"
+        ],
+        "suggestion": {
+          "role": "limb",
+          "side": "right"
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Leg_MidRear.L_01",
+          "Leg_MidRear.L_02",
+          "Leg_MidRear.L_03"
+        ],
+        "suggestion": {
+          "role": "limb",
+          "side": "left"
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Leg_MidRear.R_01",
+          "Leg_MidRear.R_02",
+          "Leg_MidRear.R_03"
+        ],
+        "suggestion": {
+          "role": "limb",
+          "side": "right"
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Leg_Rear.L_01",
+          "Leg_Rear.L_02",
+          "Leg_Rear.L_03"
+        ],
+        "suggestion": {
+          "role": "limb",
+          "side": "left"
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Leg_Rear.R_01",
+          "Leg_Rear.R_02",
+          "Leg_Rear.R_03"
+        ],
+        "suggestion": {
+          "role": "limb",
+          "side": "right"
+        },
+        "confirmed": false
+      },
+      {
+        "chain": [
+          "Tail_01",
+          "Tail_02",
+          "Tail_03",
+          "Tail_04",
+          "Tail_05",
+          "Tail_06",
+          "Tail_07",
+          "Tail_08"
+        ],
+        "suggestion": {
+          "role": "tail",
+          "side": null
+        },
+        "confirmed": false
+      }
+    ],
+    "manual_review_required": true,
+    "guidance": "Review chain candidates before solving video motion."
+  }
+}
