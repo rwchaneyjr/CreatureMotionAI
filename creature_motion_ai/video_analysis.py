@@ -36,6 +36,22 @@ def analyze_video(video_path, start=0, end=None, threshold=18):
             frames.append({"frame": index, "landmarks": {}, "confidence": 0.0})
             continue
         x, y, w, h = cv2.boundingRect(points)
+        leg_candidates = []
+        # Approximate four longitudinal leg stations from the lower contour.
+        # This is deliberately conservative: it reports candidates/confidence
+        # rather than claiming anatomical joint identity.
+        for station in range(4):
+            left = int(x + w * station / 4)
+            right = int(x + w * (station + 1) / 4)
+            crop = mask[int(y + h * 0.35):y + h, left:right]
+            local = cv2.findNonZero(crop)
+            if local is None:
+                leg_candidates.append({"station": station, "foot": None, "confidence": 0.0})
+                continue
+            lx, ly, lw, lh = cv2.boundingRect(local)
+            foot_x = (left + lx + lw / 2) / max(width, 1)
+            foot_y = (int(y + h * 0.35) + ly + lh) / max(height, 1)
+            leg_candidates.append({"station": station, "foot": [foot_x, foot_y, 0.0], "confidence": min(1.0, lh / max(h * 0.3, 1))})
         def norm(px, py):
             return [px / max(width, 1), py / max(height, 1), 0.0]
         frames.append({
@@ -47,6 +63,7 @@ def analyze_video(video_path, start=0, end=None, threshold=18):
                 "motion_left": norm(x, y + h / 2),
                 "motion_right": norm(x + w, y + h / 2),
             },
+            "leg_candidates": leg_candidates,
             "confidence": min(1.0, (w * h) / max(width * height * 0.1, 1)),
         })
     capture.release()
