@@ -71,8 +71,8 @@ def main():
         ik_active = con is not None
         if con:
             ik = con.constraints.new("IK"); ik.name = "CMAI_FootContact_IK"; ik.target = target; ik.chain_count = 2
-            ik.influence = 0.0; ik.keyframe_insert("influence", frame=observations[0]["frame"])
-            ik.influence = 1.0; ik.keyframe_insert("influence", frame=observations[0]["frame"] + 1)
+            ik.influence = 0.0; ik.keyframe_insert("influence", frame=1)
+            ik.influence = 1.0; ik.keyframe_insert("influence", frame=2)
             pole = bpy.data.objects.new("CMAI_Pole_" + name, None); bpy.context.collection.objects.link(pole)
             upper = rig.data.bones.get(name); lower = rig.data.bones.get(lower_name)
             if upper and lower:
