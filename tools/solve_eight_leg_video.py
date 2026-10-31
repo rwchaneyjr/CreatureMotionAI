@@ -33,6 +33,7 @@ def main():
     observations = motion.get("frames", [])[:24]
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.fbx(filepath=args.model)
+    bpy.context.scene.frame_set(1)
     rig = next(o for o in bpy.context.scene.objects if o.type == "ARMATURE")
     mesh = next(o for o in bpy.context.scene.objects if o.type == "MESH")
     rig.show_in_front = True
@@ -51,8 +52,8 @@ def main():
                 bone.color.palette = "THEME01"  # blue body/head/root
         except AttributeError:
             pass
-    for action in list(bpy.data.actions): bpy.data.actions.remove(action)
     rest_pose = {b.name: (b.location.copy(), b.rotation_mode, b.rotation_euler.copy(), b.rotation_quaternion.copy(), b.scale.copy()) for b in rig.pose.bones}
+    for action in list(bpy.data.actions): bpy.data.actions.remove(action)
     action = bpy.data.actions.new("CMAI_EightLeg_MP4_Solved")
     action.use_fake_user = True; rig.animation_data_create(); rig.animation_data.action = action
     # Four stations x two sides, matching the existing Balisk rig.
@@ -70,6 +71,8 @@ def main():
         ik_active = con is not None
         if con:
             ik = con.constraints.new("IK"); ik.name = "CMAI_FootContact_IK"; ik.target = target; ik.chain_count = 2
+            ik.influence = 0.0; ik.keyframe_insert("influence", frame=observations[0]["frame"])
+            ik.influence = 1.0; ik.keyframe_insert("influence", frame=observations[0]["frame"] + 1)
             pole = bpy.data.objects.new("CMAI_Pole_" + name, None); bpy.context.collection.objects.link(pole)
             upper = rig.data.bones.get(name); lower = rig.data.bones.get(lower_name)
             if upper and lower:
@@ -78,9 +81,11 @@ def main():
                 ik.pole_target = pole; ik.pole_angle = 0.0; poles[name] = pole
         targets[name] = target
     pose_names = [b.name for b in rig.pose.bones]
-    for obs in observations:
-        f = obs["frame"]; phase = (f - 1) / max(len(observations) - 1, 1)
-        is_rest_frame = f == observations[0]["frame"]
+    for obs_index, obs in enumerate(observations):
+        source_frame = obs["frame"]
+        f = obs_index + 1
+        phase = obs_index / max(len(observations) - 1, 1)
+        is_rest_frame = obs_index == 0
         for bone in rig.pose.bones:
             loc, mode, euler, quat, scale = rest_pose[bone.name]
             bone.location = loc; bone.rotation_mode = mode; bone.rotation_euler = euler; bone.rotation_quaternion = quat; bone.scale = scale
@@ -114,7 +119,7 @@ def main():
             else:
                 t = min(1.0, gait)
                 swing = t * t * (3.0 - 2.0 * t)
-            tracked = leg_tracks.get(obs["frame"], [])
+            tracked = leg_tracks.get(source_frame, [])
             candidate = next((item for item in tracked if item.get("leg") == index), {})
             if not candidate:
                 candidate = leg_candidates.get(station, {})
@@ -142,6 +147,7 @@ def main():
     rig["cmai_solver"] = "opencv_silhouette_procedural_gait_ik_two_bone_foot_preserving"; rig["cmai_source_motion"] = str(Path(args.motion).resolve()); rig["cmai_existing_actions_used"] = False
     three_data = bpy.data.cameras.new("CMAI_ThreeQuarter_Camera"); three = bpy.data.objects.new("CMAI_ThreeQuarter_Camera", three_data); bpy.context.collection.objects.link(three)
     three.location = (-3.4, -2.4, 1.45); three.rotation_euler = (Vector((0,0,0.05))-three.location).to_track_quat("-Z", "Y").to_euler(); three_data.lens = 55; scene.camera = three
+    scene.frame_set(1)
     Path(args.report).write_text(json.dumps({"fps": fps, "frames": len(observations), "leg_ik_targets": len(targets), "render_dir": str(render_dir), "comparison_pending": True, "limitations": ["overlapping/hidden legs are not individually observable", "silhouette does not identify anatomical joints"]}, indent=2), encoding="utf-8")
     bpy.ops.wm.save_as_mainfile(filepath=args.output)
     print(json.dumps({"output": args.output, "frames": len(observations), "ik_targets": len(targets)}))
