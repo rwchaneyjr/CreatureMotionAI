@@ -1,0 +1,15 @@
+{
+  "video": "C:\\Users\\rober\\Downloads\\balisk.mp4",
+  "fps": 24.0,
+  "frame_count": 121,
+  "width": 1280,
+  "height": 720,
+  "start_frame": 0,
+  "end_frame_exclusive": 3,
+  "frames_written": 3,
+  "files": [
+    "frame_000001.png",
+    "frame_000002.png",
+    "frame_000003.png"
+  ]
+}

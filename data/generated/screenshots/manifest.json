@@ -1,0 +1,67 @@
+[
+  {
+    "bone": "__REST_SKELETON__",
+    "rotation_z": 0.0,
+    "screenshot": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\screenshots\\skeleton_rest_pose.png"
+  },
+  {
+    "bone": "Leg_01.L_upper",
+    "rotation_z": 0.32,
+    "screenshot": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\screenshots\\Leg_01_L_upper.png"
+  },
+  {
+    "bone": "Leg_01.L_lower",
+    "rotation_z": 0.32,
+    "screenshot": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\screenshots\\Leg_01_L_lower.png"
+  },
+  {
+    "bone": "Leg_01.R_upper",
+    "rotation_z": 0.32,
+    "screenshot": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\screenshots\\Leg_01_R_upper.png"
+  },
+  {
+    "bone": "Leg_01.R_lower",
+    "rotation_z": 0.32,
+    "screenshot": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\screenshots\\Leg_01_R_lower.png"
+  },
+  {
+    "bone": "Leg_02.L_upper",
+    "rotation_z": 0.32,
+    "screenshot": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\screenshots\\Leg_02_L_upper.png"
+  },
+  {
+    "bone": "Leg_02.L_lower",
+    "rotation_z": 0.32,
+    "screenshot": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\screenshots\\Leg_02_L_lower.png"
+  },
+  {
+    "bone": "Leg_02.R_upper",
+    "rotation_z": 0.32,
+    "screenshot": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\screenshots\\Leg_02_R_upper.png"
+  },
+  {
+    "bone": "Leg_02.R_lower",
+    "rotation_z": 0.32,
+    "screenshot": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\screenshots\\Leg_02_R_lower.png"
+  },
+  {
+    "bone": "Leg_03.L_upper",
+    "rotation_z": 0.32,
+    "screenshot": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\screenshots\\Leg_03_L_upper.png"
+  },
+  {
+    "bone": "Leg_03.L_lower",
+    "rotation_z": 0.32,
+    "screenshot": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\screenshots\\Leg_03_L_lower.png"
+  },
+  {
+    "bone": "Leg_03.R_upper",
+    "rotation_z": 0.32,
+    "screenshot": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\screenshots\\Leg_03_R_upper.png"
+  },
+  {
+    "bone": "Leg_03.R_lower",
+    "rotation_z": 0.32,
+    "screenshot": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\screenshots\\Leg_03_R_lower.png"
+  }
+]

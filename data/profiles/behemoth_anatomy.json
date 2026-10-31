@@ -1,0 +1,75 @@
+{
+  "format": "creature_motion_ai.anatomy_profile.v1",
+  "source": "C:\\Users\\rober\\Desktop\\MESH2MOTION_FBX_TEXTURES\\CrimsonSpineBehemoth\\CrimsonSpineBehemoth_Animated.fbx",
+  "mesh_objects": [
+    {
+      "name": "CrimsonSpineBehemoth_Mesh",
+      "vertices": 601909,
+      "polygons": 1203850,
+      "dimensions": [
+        1.1499719619750977,
+        1.9019365310668945,
+        0.4805539846420288
+      ],
+      "materials": [
+        "Material.001"
+      ]
+    }
+  ],
+  "armatures": [
+    {
+      "name": "CrimsonSpineBehemoth_Rig",
+      "bones": 38,
+      "bone_names": [
+        "Root",
+        "Body_01",
+        "Body_02",
+        "Body_03",
+        "Head_01",
+        "Head_02",
+        "Leg_Front.L_01",
+        "Leg_Front.L_02",
+        "Leg_Front.L_03",
+        "Leg_Front.R_01",
+        "Leg_Front.R_02",
+        "Leg_Front.R_03",
+        "Leg_MidFront.L_01",
+        "Leg_MidFront.L_02",
+        "Leg_MidFront.L_03",
+        "Leg_MidFront.R_01",
+        "Leg_MidFront.R_02",
+        "Leg_MidFront.R_03",
+        "Leg_MidRear.L_01",
+        "Leg_MidRear.L_02",
+        "Leg_MidRear.L_03",
+        "Leg_MidRear.R_01",
+        "Leg_MidRear.R_02",
+        "Leg_MidRear.R_03",
+        "Leg_Rear.L_01",
+        "Leg_Rear.L_02",
+        "Leg_Rear.L_03",
+        "Leg_Rear.R_01",
+        "Leg_Rear.R_02",
+        "Leg_Rear.R_03",
+        "Tail_01",
+        "Tail_02",
+        "Tail_03",
+        "Tail_04",
+        "Tail_05",
+        "Tail_06",
+        "Tail_07",
+        "Tail_08"
+      ]
+    }
+  ],
+  "candidate_parts": {
+    "body": [],
+    "head_neck": [],
+    "limbs": [],
+    "tail": [],
+    "wings": [],
+    "other": []
+  },
+  "review_required": true,
+  "notes": "Geometry inspection only; candidate anatomy must be confirmed before generation or skinning."
+}
