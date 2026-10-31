@@ -1,0 +1,812 @@
+{
+  "frames": [
+    1,
+    6,
+    12,
+    18,
+    24
+  ],
+  "bones": [
+    {
+      "frame": 1,
+      "bone": "Leg_Front.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 1,
+      "bone": "Leg_Front.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 1,
+      "bone": "Leg_MidFront.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 1,
+      "bone": "Leg_MidFront.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 1,
+      "bone": "Leg_MidRear.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 1,
+      "bone": "Leg_MidRear.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 1,
+      "bone": "Leg_Rear.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 1,
+      "bone": "Leg_Rear.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 6,
+      "bone": "Leg_Front.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 6,
+      "bone": "Leg_Front.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 6,
+      "bone": "Leg_MidFront.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 6,
+      "bone": "Leg_MidFront.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 6,
+      "bone": "Leg_MidRear.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 6,
+      "bone": "Leg_MidRear.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 6,
+      "bone": "Leg_Rear.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 6,
+      "bone": "Leg_Rear.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 12,
+      "bone": "Leg_Front.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 12,
+      "bone": "Leg_Front.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 12,
+      "bone": "Leg_MidFront.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 12,
+      "bone": "Leg_MidFront.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 12,
+      "bone": "Leg_MidRear.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 12,
+      "bone": "Leg_MidRear.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 12,
+      "bone": "Leg_Rear.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 12,
+      "bone": "Leg_Rear.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 18,
+      "bone": "Leg_Front.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 18,
+      "bone": "Leg_Front.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 18,
+      "bone": "Leg_MidFront.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 18,
+      "bone": "Leg_MidFront.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 18,
+      "bone": "Leg_MidRear.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 18,
+      "bone": "Leg_MidRear.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 18,
+      "bone": "Leg_Rear.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 18,
+      "bone": "Leg_Rear.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 24,
+      "bone": "Leg_Front.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 24,
+      "bone": "Leg_Front.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 24,
+      "bone": "Leg_MidFront.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 24,
+      "bone": "Leg_MidFront.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 24,
+      "bone": "Leg_MidRear.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 24,
+      "bone": "Leg_MidRear.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 24,
+      "bone": "Leg_Rear.L_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    },
+    {
+      "frame": 24,
+      "bone": "Leg_Rear.R_03",
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rest_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "possible_flip": false
+    }
+  ],
+  "flipped_count": 0
+}

@@ -46,7 +46,7 @@ def inspect(filepath, output):
     # The default template is deliberately editable and does not claim that
     # every creature has this topology. Longitudinal stations and side anchors
     # are proposed from the mesh bounds only.
-    stations = [0.22, 0.50, 0.78]
+    stations = [0.16, 0.38, 0.62, 0.84]
     limbs = []
     for index, station in enumerate(stations, 1):
         y = minimum.y + length * station
@@ -68,7 +68,7 @@ def inspect(filepath, output):
         "format": "creature_motion_ai.anatomy_profile.v1",
         "source": str(filepath),
         "mesh_objects": meshes,
-        "template": {"legs_per_side": 3, "heads": 1, "tails": 1, "wings": 0,
+        "template": {"legs_per_side": 4, "heads": 1, "tails": 1, "wings": 0,
                      "longitudinal_axis": "Y", "vertical_axis": "Z"},
         "bounds": {"min": list(minimum), "max": list(maximum)},
         "candidate_parts": candidate_parts,
