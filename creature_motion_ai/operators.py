@@ -103,21 +103,62 @@ class CMAI_OT_analyze_video_opencv(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class CMAI_OT_solve_video_opencv(bpy.types.Operator):
+    bl_idname = "cmai.solve_video_opencv"
+    bl_label = "Solve Animation Automatically (OpenCV)"
+    bl_description = "Generate a new eight-legged Action without DeepLabCut"
+
+    def execute(self, context):
+        scene = context.scene
+        video = bpy.path.abspath(scene.cmai_video)
+        model = bpy.path.abspath(scene.cmai_model)
+        motion = bpy.path.abspath(scene.cmai_motion_output)
+        output = bpy.path.abspath(scene.cmai_solver_output)
+        if not os.path.isfile(video) or not os.path.isfile(model):
+            self.report({'ERROR'}, "Choose an MP4 and source model first")
+            return {'CANCELLED'}
+        script_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools"))
+        analyzer = os.path.join(script_dir, "analyze_video_opencv.py")
+        solver = os.path.join(script_dir, "solve_eight_leg_video.py")
+        python_executable = bpy.path.abspath(scene.cmai_python) or sys.executable
+        try:
+            analyzed = subprocess.run([python_executable, analyzer, "--video", video, "--output", motion,
+                                       "--start", str(scene.cmai_start), "--end", str(scene.cmai_end)], capture_output=True, text=True, check=False)
+            if analyzed.returncode:
+                self.report({'ERROR'}, analyzed.stderr[-500:] or "OpenCV analysis failed")
+                return {'CANCELLED'}
+            blender = bpy.app.binary_path
+            command = [blender, "--background", "--python", solver, "--", "--model", model,
+                       "--motion", motion, "--output", output, "--report", bpy.path.abspath(scene.cmai_solver_report)]
+            result = subprocess.run(command, capture_output=True, text=True, check=False)
+        except OSError as exc:
+            self.report({'ERROR'}, str(exc))
+            return {'CANCELLED'}
+        if result.returncode:
+            self.report({'ERROR'}, result.stderr[-500:] or "Automatic solver failed")
+            return {'CANCELLED'}
+        self.report({'INFO'}, "Created a new OpenCV/IK animation; review the solver report for low-confidence frames")
+        return {'FINISHED'}
+
+
 def register():
-    for cls in (CMAI_OT_extract_frames, CMAI_OT_not_ready, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv):
+    for cls in (CMAI_OT_extract_frames, CMAI_OT_not_ready, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv, CMAI_OT_solve_video_opencv):
         bpy.utils.register_class(cls)
     bpy.types.Scene.cmai_video = StringProperty(name="MP4 Video", subtype='FILE_PATH')
+    bpy.types.Scene.cmai_model = StringProperty(name="Source Model", subtype='FILE_PATH')
     bpy.types.Scene.cmai_output = StringProperty(name="Output Folder", subtype='DIR_PATH', default="//data/frames")
     bpy.types.Scene.cmai_python = StringProperty(name="External Python", subtype='FILE_PATH', default="C:\\Users\\rober\\.venv\\deeplabcut\\Scripts\\python.exe")
     bpy.types.Scene.cmai_dlc_output = StringProperty(name="DLC Project Folder", subtype='DIR_PATH', default="//data/deeplabcut")
     bpy.types.Scene.cmai_motion_output = StringProperty(name="Motion Data", subtype='FILE_PATH', default="//data/motion/motion.json")
     bpy.types.Scene.cmai_start = IntProperty(name="Start Frame", default=0, min=0)
     bpy.types.Scene.cmai_end = IntProperty(name="End Frame", default=30, min=1)
+    bpy.types.Scene.cmai_solver_output = StringProperty(name="Solved Blend", subtype='FILE_PATH', default="//data/generated/cmai_solved.blend")
+    bpy.types.Scene.cmai_solver_report = StringProperty(name="Solver Report", subtype='FILE_PATH', default="//data/generated/cmai_solver_report.json")
 
 
 def unregister():
-    for name in ("cmai_video", "cmai_output", "cmai_python", "cmai_dlc_output", "cmai_motion_output", "cmai_start", "cmai_end"):
+    for name in ("cmai_video", "cmai_model", "cmai_output", "cmai_python", "cmai_dlc_output", "cmai_motion_output", "cmai_start", "cmai_end", "cmai_solver_output", "cmai_solver_report"):
         delattr(bpy.types.Scene, name)
-    for cls in reversed((CMAI_OT_extract_frames, CMAI_OT_not_ready, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv)):
+    for cls in reversed((CMAI_OT_extract_frames, CMAI_OT_not_ready, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv, CMAI_OT_solve_video_opencv)):
         bpy.utils.unregister_class(cls)
 

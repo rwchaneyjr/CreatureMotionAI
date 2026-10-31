@@ -1,0 +1,24 @@
+{
+  "frames": [
+    {
+      "frame": 1,
+      "silhouette_iou": 0.20999576501184009,
+      "centroid_error": 0.044538102542935075,
+      "scale_error": 0.5539417613636364
+    },
+    {
+      "frame": 12,
+      "silhouette_iou": 0.22262012934951092,
+      "centroid_error": 0.040179346470699345,
+      "scale_error": 0.5580141129032258
+    },
+    {
+      "frame": 24,
+      "silhouette_iou": 0.21689254656156173,
+      "centroid_error": 0.049687745675493264,
+      "scale_error": 0.5415282392026578
+    }
+  ],
+  "mean_silhouette_iou": 0.2165028136409709,
+  "interpretation": "Higher IoU is better; silhouette comparison cannot resolve hidden legs or joint identity."
+}

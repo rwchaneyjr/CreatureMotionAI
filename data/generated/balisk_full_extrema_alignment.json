@@ -1,0 +1,497 @@
+{
+  "events": [
+    {
+      "signal": "body_y",
+      "video_frame": 118,
+      "value": 0.5258333333333334
+    }
+  ],
+  "mapping": [
+    {
+      "video_frame": 0,
+      "blender_frame": 1
+    },
+    {
+      "video_frame": 1,
+      "blender_frame": 2
+    },
+    {
+      "video_frame": 2,
+      "blender_frame": 3
+    },
+    {
+      "video_frame": 3,
+      "blender_frame": 4
+    },
+    {
+      "video_frame": 4,
+      "blender_frame": 5
+    },
+    {
+      "video_frame": 5,
+      "blender_frame": 6
+    },
+    {
+      "video_frame": 6,
+      "blender_frame": 7
+    },
+    {
+      "video_frame": 7,
+      "blender_frame": 8
+    },
+    {
+      "video_frame": 8,
+      "blender_frame": 9
+    },
+    {
+      "video_frame": 9,
+      "blender_frame": 10
+    },
+    {
+      "video_frame": 10,
+      "blender_frame": 11
+    },
+    {
+      "video_frame": 11,
+      "blender_frame": 12
+    },
+    {
+      "video_frame": 12,
+      "blender_frame": 13
+    },
+    {
+      "video_frame": 13,
+      "blender_frame": 14
+    },
+    {
+      "video_frame": 14,
+      "blender_frame": 15
+    },
+    {
+      "video_frame": 15,
+      "blender_frame": 16
+    },
+    {
+      "video_frame": 16,
+      "blender_frame": 17
+    },
+    {
+      "video_frame": 17,
+      "blender_frame": 18
+    },
+    {
+      "video_frame": 18,
+      "blender_frame": 19
+    },
+    {
+      "video_frame": 19,
+      "blender_frame": 20
+    },
+    {
+      "video_frame": 20,
+      "blender_frame": 21
+    },
+    {
+      "video_frame": 21,
+      "blender_frame": 22
+    },
+    {
+      "video_frame": 22,
+      "blender_frame": 23
+    },
+    {
+      "video_frame": 23,
+      "blender_frame": 24
+    },
+    {
+      "video_frame": 24,
+      "blender_frame": 25
+    },
+    {
+      "video_frame": 25,
+      "blender_frame": 26
+    },
+    {
+      "video_frame": 26,
+      "blender_frame": 27
+    },
+    {
+      "video_frame": 27,
+      "blender_frame": 28
+    },
+    {
+      "video_frame": 28,
+      "blender_frame": 29
+    },
+    {
+      "video_frame": 29,
+      "blender_frame": 30
+    },
+    {
+      "video_frame": 30,
+      "blender_frame": 31
+    },
+    {
+      "video_frame": 31,
+      "blender_frame": 32
+    },
+    {
+      "video_frame": 32,
+      "blender_frame": 33
+    },
+    {
+      "video_frame": 33,
+      "blender_frame": 34
+    },
+    {
+      "video_frame": 34,
+      "blender_frame": 35
+    },
+    {
+      "video_frame": 35,
+      "blender_frame": 36
+    },
+    {
+      "video_frame": 36,
+      "blender_frame": 37
+    },
+    {
+      "video_frame": 37,
+      "blender_frame": 38
+    },
+    {
+      "video_frame": 38,
+      "blender_frame": 39
+    },
+    {
+      "video_frame": 39,
+      "blender_frame": 40
+    },
+    {
+      "video_frame": 40,
+      "blender_frame": 41
+    },
+    {
+      "video_frame": 41,
+      "blender_frame": 42
+    },
+    {
+      "video_frame": 42,
+      "blender_frame": 43
+    },
+    {
+      "video_frame": 43,
+      "blender_frame": 44
+    },
+    {
+      "video_frame": 44,
+      "blender_frame": 45
+    },
+    {
+      "video_frame": 45,
+      "blender_frame": 46
+    },
+    {
+      "video_frame": 46,
+      "blender_frame": 47
+    },
+    {
+      "video_frame": 47,
+      "blender_frame": 48
+    },
+    {
+      "video_frame": 48,
+      "blender_frame": 49
+    },
+    {
+      "video_frame": 49,
+      "blender_frame": 50
+    },
+    {
+      "video_frame": 50,
+      "blender_frame": 51
+    },
+    {
+      "video_frame": 51,
+      "blender_frame": 52
+    },
+    {
+      "video_frame": 52,
+      "blender_frame": 53
+    },
+    {
+      "video_frame": 53,
+      "blender_frame": 54
+    },
+    {
+      "video_frame": 54,
+      "blender_frame": 55
+    },
+    {
+      "video_frame": 55,
+      "blender_frame": 56
+    },
+    {
+      "video_frame": 56,
+      "blender_frame": 57
+    },
+    {
+      "video_frame": 57,
+      "blender_frame": 58
+    },
+    {
+      "video_frame": 58,
+      "blender_frame": 59
+    },
+    {
+      "video_frame": 59,
+      "blender_frame": 60
+    },
+    {
+      "video_frame": 60,
+      "blender_frame": 61
+    },
+    {
+      "video_frame": 61,
+      "blender_frame": 62
+    },
+    {
+      "video_frame": 62,
+      "blender_frame": 63
+    },
+    {
+      "video_frame": 63,
+      "blender_frame": 64
+    },
+    {
+      "video_frame": 64,
+      "blender_frame": 65
+    },
+    {
+      "video_frame": 65,
+      "blender_frame": 66
+    },
+    {
+      "video_frame": 66,
+      "blender_frame": 67
+    },
+    {
+      "video_frame": 67,
+      "blender_frame": 68
+    },
+    {
+      "video_frame": 68,
+      "blender_frame": 69
+    },
+    {
+      "video_frame": 69,
+      "blender_frame": 70
+    },
+    {
+      "video_frame": 70,
+      "blender_frame": 71
+    },
+    {
+      "video_frame": 71,
+      "blender_frame": 72
+    },
+    {
+      "video_frame": 72,
+      "blender_frame": 73
+    },
+    {
+      "video_frame": 73,
+      "blender_frame": 74
+    },
+    {
+      "video_frame": 74,
+      "blender_frame": 75
+    },
+    {
+      "video_frame": 75,
+      "blender_frame": 76
+    },
+    {
+      "video_frame": 76,
+      "blender_frame": 77
+    },
+    {
+      "video_frame": 77,
+      "blender_frame": 78
+    },
+    {
+      "video_frame": 78,
+      "blender_frame": 79
+    },
+    {
+      "video_frame": 79,
+      "blender_frame": 80
+    },
+    {
+      "video_frame": 80,
+      "blender_frame": 81
+    },
+    {
+      "video_frame": 81,
+      "blender_frame": 82
+    },
+    {
+      "video_frame": 82,
+      "blender_frame": 83
+    },
+    {
+      "video_frame": 83,
+      "blender_frame": 84
+    },
+    {
+      "video_frame": 84,
+      "blender_frame": 85
+    },
+    {
+      "video_frame": 85,
+      "blender_frame": 86
+    },
+    {
+      "video_frame": 86,
+      "blender_frame": 87
+    },
+    {
+      "video_frame": 87,
+      "blender_frame": 88
+    },
+    {
+      "video_frame": 88,
+      "blender_frame": 89
+    },
+    {
+      "video_frame": 89,
+      "blender_frame": 90
+    },
+    {
+      "video_frame": 90,
+      "blender_frame": 91
+    },
+    {
+      "video_frame": 91,
+      "blender_frame": 92
+    },
+    {
+      "video_frame": 92,
+      "blender_frame": 93
+    },
+    {
+      "video_frame": 93,
+      "blender_frame": 94
+    },
+    {
+      "video_frame": 94,
+      "blender_frame": 95
+    },
+    {
+      "video_frame": 95,
+      "blender_frame": 96
+    },
+    {
+      "video_frame": 96,
+      "blender_frame": 97
+    },
+    {
+      "video_frame": 97,
+      "blender_frame": 98
+    },
+    {
+      "video_frame": 98,
+      "blender_frame": 99
+    },
+    {
+      "video_frame": 99,
+      "blender_frame": 100
+    },
+    {
+      "video_frame": 100,
+      "blender_frame": 101
+    },
+    {
+      "video_frame": 101,
+      "blender_frame": 102
+    },
+    {
+      "video_frame": 102,
+      "blender_frame": 103
+    },
+    {
+      "video_frame": 103,
+      "blender_frame": 104
+    },
+    {
+      "video_frame": 104,
+      "blender_frame": 105
+    },
+    {
+      "video_frame": 105,
+      "blender_frame": 106
+    },
+    {
+      "video_frame": 106,
+      "blender_frame": 107
+    },
+    {
+      "video_frame": 107,
+      "blender_frame": 108
+    },
+    {
+      "video_frame": 108,
+      "blender_frame": 109
+    },
+    {
+      "video_frame": 109,
+      "blender_frame": 110
+    },
+    {
+      "video_frame": 110,
+      "blender_frame": 111
+    },
+    {
+      "video_frame": 111,
+      "blender_frame": 112
+    },
+    {
+      "video_frame": 112,
+      "blender_frame": 113
+    },
+    {
+      "video_frame": 113,
+      "blender_frame": 114
+    },
+    {
+      "video_frame": 114,
+      "blender_frame": 115
+    },
+    {
+      "video_frame": 115,
+      "blender_frame": 116
+    },
+    {
+      "video_frame": 116,
+      "blender_frame": 117
+    },
+    {
+      "video_frame": 117,
+      "blender_frame": 118
+    },
+    {
+      "video_frame": 118,
+      "blender_frame": 119
+    },
+    {
+      "video_frame": 119,
+      "blender_frame": 120
+    },
+    {
+      "video_frame": 120,
+      "blender_frame": 121
+    }
+  ],
+  "fps": 24.0,
+  "notes": "Extrema are timing anchors; hidden legs still require gait inference."
+}

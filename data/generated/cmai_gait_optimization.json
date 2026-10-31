@@ -1,0 +1,7 @@
+{
+  "best_mean_iou": 0.2186843241984543,
+  "stride": 0.14,
+  "lift": 0.04,
+  "phase_offset": 0.4,
+  "output": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\cmai_gait_optimized.blend"
+}

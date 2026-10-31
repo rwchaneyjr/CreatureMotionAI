@@ -1,0 +1,10 @@
+{
+  "fps": 24.0,
+  "frames": 24,
+  "leg_ik_targets": 8,
+  "render_dir": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\eight_leg_render",
+  "limitations": [
+    "overlapping/hidden legs are not individually observable",
+    "silhouette does not identify anatomical joints"
+  ]
+}

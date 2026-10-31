@@ -53,6 +53,27 @@ def main():
             tail.rotation_mode = "XYZ"
             tail.rotation_euler.z = (cx - base[0]) * 0.8
             tail.keyframe_insert("rotation_euler", frame=frame)
+        # Creature-independent first-pass gait: distribute stride phase by
+        # longitudinal station and side so every leg contributes motion while
+        # retaining the timing of the source clip.
+        phase = (frame - valid[0]["frame"]) / max(valid[-1]["frame"] - valid[0]["frame"], 1)
+        for bone in rig.pose.bones:
+            if not (bone.name.startswith("Leg_") and ("_01" in bone.name or "_02" in bone.name or "_03" in bone.name)):
+                continue
+            parts = bone.name.split(".")
+            side_phase = 0.5 if len(parts) > 1 and parts[1].startswith("R") else 0.0
+            station_name = bone.name.split("_")[1].split(".")[0]
+            station_index = {"Front": 0, "MidFront": 1, "MidRear": 2, "Rear": 3}.get(station_name, 0)
+            station_phase = station_index * 0.18
+            import math
+            stride = math.sin((phase + side_phase + station_phase) * math.tau)
+            bone.rotation_mode = "XYZ"
+            if "_01" in bone.name:
+                bone.rotation_euler.y = stride * 0.32
+                bone.rotation_euler.z = stride * 0.12
+            else:
+                bone.rotation_euler.y = -max(0.0, stride) * 0.42
+            bone.keyframe_insert("rotation_euler", frame=frame)
     scene = bpy.context.scene
     scene.frame_start = int(valid[0]["frame"])
     scene.frame_end = int(valid[-1]["frame"])

@@ -1,0 +1,129 @@
+{
+  "events": [
+    {
+      "signal": "body_x",
+      "video_frame": 27,
+      "value": 0.4273437500000001
+    }
+  ],
+  "mapping": [
+    {
+      "video_frame": 1,
+      "blender_frame": 1
+    },
+    {
+      "video_frame": 2,
+      "blender_frame": 2
+    },
+    {
+      "video_frame": 3,
+      "blender_frame": 3
+    },
+    {
+      "video_frame": 4,
+      "blender_frame": 4
+    },
+    {
+      "video_frame": 5,
+      "blender_frame": 5
+    },
+    {
+      "video_frame": 6,
+      "blender_frame": 6
+    },
+    {
+      "video_frame": 7,
+      "blender_frame": 7
+    },
+    {
+      "video_frame": 8,
+      "blender_frame": 8
+    },
+    {
+      "video_frame": 9,
+      "blender_frame": 9
+    },
+    {
+      "video_frame": 10,
+      "blender_frame": 10
+    },
+    {
+      "video_frame": 11,
+      "blender_frame": 11
+    },
+    {
+      "video_frame": 12,
+      "blender_frame": 12
+    },
+    {
+      "video_frame": 13,
+      "blender_frame": 13
+    },
+    {
+      "video_frame": 14,
+      "blender_frame": 14
+    },
+    {
+      "video_frame": 15,
+      "blender_frame": 15
+    },
+    {
+      "video_frame": 16,
+      "blender_frame": 16
+    },
+    {
+      "video_frame": 17,
+      "blender_frame": 17
+    },
+    {
+      "video_frame": 18,
+      "blender_frame": 18
+    },
+    {
+      "video_frame": 19,
+      "blender_frame": 19
+    },
+    {
+      "video_frame": 20,
+      "blender_frame": 20
+    },
+    {
+      "video_frame": 21,
+      "blender_frame": 21
+    },
+    {
+      "video_frame": 22,
+      "blender_frame": 22
+    },
+    {
+      "video_frame": 23,
+      "blender_frame": 23
+    },
+    {
+      "video_frame": 24,
+      "blender_frame": 24
+    },
+    {
+      "video_frame": 25,
+      "blender_frame": 25
+    },
+    {
+      "video_frame": 26,
+      "blender_frame": 26
+    },
+    {
+      "video_frame": 27,
+      "blender_frame": 27
+    },
+    {
+      "video_frame": 28,
+      "blender_frame": 28
+    },
+    {
+      "video_frame": 29,
+      "blender_frame": 29
+    }
+  ],
+  "fps": 24.0,
+  "notes": "Extrema are timing anchors; hidden legs still require gait inference."
+}

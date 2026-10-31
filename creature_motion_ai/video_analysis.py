@@ -23,7 +23,13 @@ def analyze_video(video_path, start=0, end=None, threshold=18):
         else:
             motion = cv2.absdiff(gray, previous)
         previous = gray
-        _, mask = cv2.threshold(motion, threshold, 255, cv2.THRESH_BINARY)
+        # Prefer foreground segmentation for studio footage: the Balisk is
+        # saturated blue/red while the background is mostly gray. Fall back
+        # to frame difference when saturation is insufficient.
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        saturated = cv2.inRange(hsv, (0, 28, 20), (179, 255, 245))
+        _, motion_mask = cv2.threshold(motion, threshold, 255, cv2.THRESH_BINARY)
+        mask = cv2.bitwise_or(saturated, motion_mask)
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, None)
         points = cv2.findNonZero(mask)
         if points is None:

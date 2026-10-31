@@ -1,0 +1,16 @@
+{
+  "best_mean_iou": 0.3606503665394914,
+  "station_phase": [
+    0.0,
+    -0.18,
+    -0.18,
+    -0.18
+  ],
+  "station_stride": [
+    1.0,
+    0.8,
+    0.8,
+    0.8
+  ],
+  "output": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\cmai_per_leg_optimized.blend"
+}
