@@ -1,0 +1,23 @@
+# Local Python environments and caches
+.venv/
+**/__pycache__/
+*.py[cod]
+
+# Downloaded model weights and Hugging Face caches
+models/
+
+# Blender/video/image outputs and temporary experiment artifacts
+data/generated/
+data/cache/
+*.blend1
+*.mp4
+*.avi
+*.mov
+*.png
+*.jpg
+*.jpeg
+
+# Local logs and reports generated during experiments
+*.log
+*.tmp
+
