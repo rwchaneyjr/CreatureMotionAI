@@ -15,22 +15,25 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--model", required=True); p.add_argument("--motion", required=True)
     p.add_argument("--output", required=True); p.add_argument("--report", required=True)
-    p.add_argument("--stride", type=float, default=0.10); p.add_argument("--lift", type=float, default=0.07)
+    p.add_argument("--stride", type=float, default=0.03); p.add_argument("--lift", type=float, default=0.02)
     p.add_argument("--phase-offset", type=float, default=0.55); p.add_argument("--body-amplitude", type=float, default=0.4)
     p.add_argument("--station-phase", default="0,0,0,0"); p.add_argument("--station-stride", default="1,1,1,1")
     p.add_argument("--leg-tracks", default="")
+    p.add_argument("--use-tracks", action="store_true")
+    p.add_argument("--max-frames", type=int, default=24)
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
     args = p.parse_args(argv)
     station_phase = [float(x) for x in args.station_phase.split(",")]
     station_stride = [float(x) for x in args.station_stride.split(",")]
     leg_tracks = {}
-    if args.leg_tracks:
+    if args.leg_tracks and args.use_tracks:
         track_data = json.loads(Path(args.leg_tracks).read_text(encoding="utf-8"))
         leg_tracks = {item["frame"]: item.get("candidates", []) for item in track_data.get("frames", [])}
     root = Path(args.output).parent
     motion = json.loads(Path(args.motion).read_text(encoding="utf-8"))
     fps = float(motion.get("fps", 24.0))
-    observations = motion.get("frames", [])[:24]
+    all_observations = motion.get("frames", [])
+    observations = all_observations[:args.max_frames] if args.max_frames > 0 else all_observations
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.fbx(filepath=args.model)
     bpy.context.scene.frame_set(1)
@@ -53,6 +56,7 @@ def main():
         except AttributeError:
             pass
     rest_pose = {b.name: (b.location.copy(), b.rotation_mode, b.rotation_euler.copy(), b.rotation_quaternion.copy(), b.scale.copy()) for b in rig.pose.bones}
+    root_rest_location = rest_pose.get("Root", (Vector((0, 0, 0)),))[0].copy()
     for action in list(bpy.data.actions): bpy.data.actions.remove(action)
     action = bpy.data.actions.new("CMAI_EightLeg_MP4_Solved")
     action.use_fake_user = True; rig.animation_data_create(); rig.animation_data.action = action
@@ -60,15 +64,25 @@ def main():
     leg_roots = [n for n in rig.data.bones.keys() if n.startswith("Leg_") and (n.endswith("_upper") or n.endswith("_01"))]
     leg_roots.sort()
     targets = {}
+    leg_ik_active = {}
+    leg_reach = {}
     poles = {}
     for name in leg_roots:
         target = bpy.data.objects.new("CMAI_IK_" + name, None); bpy.context.collection.objects.link(target)
         target.empty_display_type = "SPHERE"; target.empty_display_size = 0.04
-        target.location = rig.matrix_world @ rig.data.bones[name].tail_local
         lower_name = name.replace("_upper", "_lower").replace("_01", "_02")
         ankle_name = name.replace("_upper", "_lower").replace("_01", "_03")
+        foot_data_bone = rig.data.bones.get(ankle_name)
+        if foot_data_bone:
+            target.location = rig.matrix_world @ foot_data_bone.tail_local
+        else:
+            target.location = rig.matrix_world @ rig.data.bones[name].tail_local
         con = rig.pose.bones.get(ankle_name)
         ik_active = con is not None
+        leg_ik_active[name] = ik_active
+        upper_bone = rig.data.bones.get(name)
+        lower_bone = rig.data.bones.get(lower_name)
+        leg_reach[name] = (upper_bone.length if upper_bone else 0.0) + (lower_bone.length if lower_bone else 0.0)
         if con:
             ik = con.constraints.new("IK"); ik.name = "CMAI_FootContact_IK"; ik.target = target; ik.chain_count = 2
             ik.influence = 0.0; ik.keyframe_insert("influence", frame=1)
@@ -98,8 +112,12 @@ def main():
         root_bone = rig.pose.bones.get("Root")
         body = rig.pose.bones.get("Body_02") or rig.pose.bones.get("Body_01")
         tail = rig.pose.bones.get("Tail_02")
+        # Move the whole creature in its longitudinal local axis to match the
+        # reference screen position. This is separate from leg IK and is based
+        # on the original root location.
         if root_bone and not is_rest_frame:
-            root_bone.location = ((0.5 - cx) * 0.35, 0, (cy - 0.5) * 0.18); root_bone.keyframe_insert("location", frame=f)
+            root_bone.location = root_rest_location + Vector((0.0, (0.5 - cx) * 0.9, (cy - 0.5) * 0.25))
+            root_bone.keyframe_insert("location", frame=f)
         if body and not is_rest_frame:
             body.rotation_mode = "XYZ"; body.rotation_euler = Euler(((cy - 0.5) * args.body_amplitude, (cx - 0.5) * 0.3, (sx - 0.5) * 0.15), "XYZ"); body.keyframe_insert("rotation_euler", frame=f)
         if tail and not is_rest_frame:
@@ -107,7 +125,9 @@ def main():
         for index, name in enumerate(leg_roots):
             station = index // 2; side = index % 2
             gait = math.sin((phase * math.tau) + station * args.phase_offset + station_phase[station] + side * math.pi)
-            target = targets[name]; base = rig.matrix_world @ rig.data.bones[name].tail_local
+            target = targets[name]
+            foot_data_bone = rig.data.bones.get(name.replace("_upper", "_lower").replace("_01", "_03"))
+            base = rig.matrix_world @ (foot_data_bone.tail_local if foot_data_bone else rig.data.bones[name].tail_local)
             # Fixed-foot stance: target remains low while swing phase lifts it.
             # Contact-aware interpolation: negative gait is stance (fixed
             # target); positive gait is swing, smoothly interpolated from the
@@ -119,30 +139,31 @@ def main():
             else:
                 t = min(1.0, gait)
                 swing = t * t * (3.0 - 2.0 * t)
-            tracked = leg_tracks.get(source_frame, [])
-            candidate = next((item for item in tracked if item.get("leg") == index), {})
-            if not candidate:
-                candidate = leg_candidates.get(station, {})
-            foot = candidate.get("foot")
-            local_y = ((foot[0] - cx) * 0.18) if foot and candidate.get("confidence", 0) > 0.15 else 0.0
-            local_z = ((0.65 - foot[1]) * 0.10) if foot and candidate.get("confidence", 0) > 0.15 else 0.0
-            target.location = base + Vector((0, swing * args.stride * station_stride[station] + local_y, swing * args.lift + local_z))
+            # Offsets are small and relative to each original foot. They are
+            # transformed through the armature object, never copied from pixel
+            # coordinates. Clamp to the actual two-bone reach.
+            offset_local = Vector((0.0, swing * args.stride * station_stride[station], swing * args.lift))
+            offset = rig.matrix_world.to_3x3() @ offset_local
+            max_offset = max(0.0, leg_reach.get(name, 0.0) * 0.25)
+            if offset.length > max_offset and offset.length > 1e-8:
+                offset.normalize(); offset *= max_offset
+            target.location = base + offset
             target.keyframe_insert("location", frame=f)
             leg_root_bone = rig.pose.bones.get(name)
             lower_name = name.replace("_upper", "_lower").replace("_01", "_02")
             lower = rig.pose.bones.get(lower_name)
-            if leg_root_bone and not is_rest_frame:
-                leg_root_bone.rotation_mode = "XYZ"; leg_root_bone.rotation_euler.y = gait * 0.22; leg_root_bone.keyframe_insert("rotation_euler", frame=f)
+            # No direct keying of leg_root_bone: IK owns this chain.
             # IK owns the upper/lower leg rotation. Do not also key the lower
             # bone, which previously caused the ankle/foot to flip upward.
-            if lower and not is_rest_frame and not ik_active:
+            if lower and not is_rest_frame and not leg_ik_active.get(name, False):
                 lower.rotation_mode = "XYZ"; lower.rotation_euler.y = -max(0, gait) * 0.28; lower.keyframe_insert("rotation_euler", frame=f)
     scene = bpy.context.scene; scene.frame_start = 1; scene.frame_end = len(observations); scene.render.fps = int(round(fps))
     scene.render.engine = "BLENDER_WORKBENCH"; scene.render.resolution_x = 1280; scene.render.resolution_y = 720; scene.render.resolution_percentage = 50
     camera_data = bpy.data.cameras.new("CMAI_MP4_Side_Camera"); camera = bpy.data.objects.new("CMAI_MP4_Side_Camera", camera_data); bpy.context.collection.objects.link(camera)
     camera.location = (-2.2, 0, 0.45); camera.rotation_euler = (Vector((0,0,0))-camera.location).to_track_quat("-Z", "Y").to_euler(); camera_data.lens = 55; scene.camera = camera
     render_dir = root / "eight_leg_render"; render_dir.mkdir(exist_ok=True)
-    for f in (1, 6, 12, 18, 24):
+    sample_frames = sorted(set([1, 6, 12, 18, 24, len(observations)]))
+    for f in sample_frames:
         if f <= len(observations): scene.frame_set(f); scene.render.filepath = str(render_dir / f"blender_{f:03d}.png"); bpy.ops.render.render(write_still=True)
     rig["cmai_solver"] = "opencv_silhouette_procedural_gait_ik_two_bone_foot_preserving"; rig["cmai_source_motion"] = str(Path(args.motion).resolve()); rig["cmai_existing_actions_used"] = False
     three_data = bpy.data.cameras.new("CMAI_ThreeQuarter_Camera"); three = bpy.data.objects.new("CMAI_ThreeQuarter_Camera", three_data); bpy.context.collection.objects.link(three)

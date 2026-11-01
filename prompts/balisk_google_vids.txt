@@ -1,0 +1,18 @@
+Animate this exact eight-legged creature walking naturally.
+
+The reference image contains two camera views of the same creature.
+The left panel is a fixed side view.
+The right panel is a fixed front view, approximately 90 degrees from the first camera.
+Both panels show exactly the same creature performing exactly the same movement at exactly the same time.
+
+Keep the split-screen layout unchanged.
+Maintain all eight legs.
+Preserve the creature's body proportions, textures, colors, and anatomy.
+Keep both cameras stationary.
+Do not change camera angles.
+Do not add scene cuts.
+Do not merge the two views.
+Preserve synchronized movement between both panels.
+Make the creature walk naturally with anatomically correct joint movement and grounded feet.
+Do not add or remove limbs.
+Do not alter the creature's identity or proportions.
