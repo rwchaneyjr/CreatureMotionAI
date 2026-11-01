@@ -9,6 +9,7 @@ models/
 # Blender/video/image outputs and temporary experiment artifacts
 data/generated/
 data/cache/
+data/motion/
 *.blend1
 *.mp4
 *.avi
