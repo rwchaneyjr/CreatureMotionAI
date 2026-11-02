@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 import bpy
@@ -68,6 +71,59 @@ class CMAI_OT_review_correct(bpy.types.Operator):
         self.report({'INFO'}, "Click the corrected landmark position; Esc cancels")
         return {'RUNNING_MODAL'}
 
+
+class CMAI_OT_review_track(bpy.types.Operator):
+    bl_idname = "cmai.review_track"
+    bl_label = "Track Landmarks"
+    direction: EnumProperty(items=(("FORWARD", "Forward", "Track forward"), ("BACKWARD", "Backward", "Track backward")), default="FORWARD")
+
+    def execute(self, context):
+        scene = context.scene
+        script = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools", "track_leg_landmarks.py"))
+        output = bpy.path.abspath(scene.cmai_landmark_review_output)
+        video = bpy.path.abspath(scene.cmai_video)
+        seeds = bpy.path.abspath(scene.cmai_landmark_review_data)
+        if not all(os.path.isfile(x) for x in (script, video, seeds)):
+            self.report({'ERROR'}, "Set MP4 Video and Landmark JSON first")
+            return {'CANCELLED'}
+        command = [sys.executable, script, video, seeds, "--output", output, "--max-frames", str(scene.cmai_landmark_review_max_frames)]
+        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        if result.returncode:
+            self.report({'ERROR'}, result.stderr[-500:] or "Tracking failed")
+            return {'CANCELLED'}
+        self.report({'INFO'}, f"{self.direction.title()} tracking written to {output}; review remains provisional")
+        return {'FINISHED'}
+
+
+class CMAI_OT_review_validate(bpy.types.Operator):
+    bl_idname = "cmai.review_validate"
+    bl_label = "Validate Tracking"
+
+    def execute(self, context):
+        scene = context.scene
+        try:
+            path, data = _load_data(scene)
+            rows = data.get("frames", [])[:scene.cmai_landmark_review_max_frames]
+            leg_names = sorted({p.get("leg") for row in rows for p in row.get("points", []) if p.get("leg")})
+            report = {"status": "native_review_validation", "frames": len(rows), "legs": {}, "animation_enabled": False}
+            for leg in leg_names:
+                complete = 0
+                for row in rows:
+                    names = [p for p in row.get("points", []) if p.get("leg") == leg]
+                    visible = {p.get("name") for p in names if p.get("state") in ("manual_reviewed", "proposal", "optical_flow")}
+                    if len(visible) >= 3:
+                        complete += 1
+                report["legs"][leg] = {"complete_visible_frames": complete, "tracked_fraction": complete / max(len(rows), 1)}
+            report["complete_all_leg_frames"] = sum(x["complete_visible_frames"] == len(rows) for x in report["legs"].values()) == len(report["legs"]) and bool(report["legs"])
+            out = Path(bpy.path.abspath(scene.cmai_landmark_review_report))
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(json.dumps(report, indent=2), encoding="utf-8")
+            self.report({'INFO'}, f"Validation saved: {out.name}; animation remains disabled")
+        except Exception as exc:
+            self.report({'ERROR'}, str(exc))
+            return {'CANCELLED'}
+        return {'FINISHED'}
+
     def modal(self, context, event):
         if event.type in {'ESC', 'RIGHTMOUSE'}:
             return {'CANCELLED'}
@@ -107,11 +163,20 @@ class CMAI_PT_landmark_review(bpy.types.Panel):
         layout.prop(scene, "cmai_landmark_review_landmark")
         layout.operator("cmai.review_load_image", icon='IMAGE_DATA')
         layout.operator("cmai.review_correct_landmark", icon='PIVOT_CURSOR')
+        layout.prop(scene, "cmai_landmark_review_output")
+        row = layout.row(align=True)
+        op = row.operator("cmai.review_track", text="Track Forward", icon='FORWARD')
+        op.direction = "FORWARD"
+        op = row.operator("cmai.review_track", text="Track Backward", icon='BACK')
+        op.direction = "BACKWARD"
+        layout.prop(scene, "cmai_landmark_review_report")
+        layout.prop(scene, "cmai_landmark_review_max_frames")
+        layout.operator("cmai.review_validate", icon='CHECKMARK')
         layout.label(text="Only manually reviewed points are written.", icon='INFO')
         layout.label(text="Hidden points remain uncertain; no guess is added.")
 
 
-CLASSES = (CMAI_OT_review_load_image, CMAI_OT_review_correct, CMAI_PT_landmark_review)
+CLASSES = (CMAI_OT_review_load_image, CMAI_OT_review_correct, CMAI_OT_review_track, CMAI_OT_review_validate, CMAI_PT_landmark_review)
 
 
 def register():
@@ -122,10 +187,13 @@ def register():
     bpy.types.Scene.cmai_landmark_review_frame = IntProperty(name="Reference Frame", default=1, min=1, max=241)
     bpy.types.Scene.cmai_landmark_review_camera = EnumProperty(name="Camera", items=CAMERAS, default="camera_A")
     bpy.types.Scene.cmai_landmark_review_landmark = StringProperty(name="Landmark", default="Leg_Front.L_01_head")
+    bpy.types.Scene.cmai_landmark_review_output = StringProperty(name="Tracked Output", subtype='FILE_PATH', default="//data/generated/native_tracked_landmarks_24.json")
+    bpy.types.Scene.cmai_landmark_review_report = StringProperty(name="Validation Report", subtype='FILE_PATH', default="//data/generated/native_tracking_report.json")
+    bpy.types.Scene.cmai_landmark_review_max_frames = IntProperty(name="Max Frames", default=24, min=1, max=241)
 
 
 def unregister():
-    for name in ("cmai_landmark_review_data", "cmai_landmark_review_samples", "cmai_landmark_review_frame", "cmai_landmark_review_camera", "cmai_landmark_review_landmark"):
+    for name in ("cmai_landmark_review_data", "cmai_landmark_review_samples", "cmai_landmark_review_frame", "cmai_landmark_review_camera", "cmai_landmark_review_landmark", "cmai_landmark_review_output", "cmai_landmark_review_report", "cmai_landmark_review_max_frames"):
         delattr(bpy.types.Scene, name)
     for cls in reversed(CLASSES):
         bpy.utils.unregister_class(cls)
