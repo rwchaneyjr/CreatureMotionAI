@@ -66,7 +66,9 @@ def main() -> None:
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--samples-dir", type=Path, required=True)
     p.add_argument("--frames", type=int, nargs="+", default=[1, 6, 12, 18, 24])
+    p.add_argument("--exclude", action="append", default=[], help="Hide a known invisible point: camera:frame:landmark, with frame=all allowed.")
     args = p.parse_args()
+    exclusions = set(args.exclude)
     proposals = json.loads(args.proposals.read_text(encoding="utf-8"))
     identities = json.loads(args.identity_map.read_text(encoding="utf-8"))
     by_frame = {int(row.get("frame", 0)): row for row in proposals.get("frames", [])}
@@ -92,7 +94,8 @@ def main() -> None:
                     item = row.get(camera, {}).get("landmarks", {}).get(name)
                     x = float((item or {}).get("x", 0))
                     y = float((item or {}).get("y", 0))
-                    visible = bool(item and item.get("rig_gate") == "accepted" and visible_on_image(args.samples_dir, frame, image_camera, x, y))
+                    excluded = f"{camera}:{frame}:{name}" in exclusions or f"{camera}:all:{name}" in exclusions
+                    visible = bool(item and not excluded and item.get("rig_gate") == "accepted" and visible_on_image(args.samples_dir, frame, image_camera, x, y))
                     per_camera[camera] = {"x": x, "y": y, "state": "proposal" if visible else "estimated", "confidence": float((item or {}).get("confidence", 0.0)), "visible": visible}
                 points.append({"name": name, "leg": leg["id"], "x": per_camera["camera_A"]["x"], "y": per_camera["camera_A"]["y"], "state": per_camera["camera_A"]["state"], "confidence": per_camera["camera_A"]["confidence"], "camera_A": per_camera["camera_A"], "camera_B": per_camera["camera_B"]})
         initial["frames"].append({"frame": frame, "points": points})
