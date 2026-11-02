@@ -17,12 +17,20 @@ legs=['Leg_Front.L','Leg_Front.R','Leg_MidFront.L','Leg_MidFront.R','Leg_MidRear
 targets=[]; baseline={{}}
 for idx,name in enumerate(legs):
     upper=arm.pose.bones[name+'_01']; lower=arm.pose.bones[name+'_02']; foot=arm.pose.bones[name+'_03']
-    # Lower-bone tail is the IK endpoint; this avoids the earlier knee-target bug.
-    end=arm.matrix_world @ lower.tail; base=end.copy(); baseline[name]=tuple(base)
+    # The original foot-bone tail is the IK endpoint. Using the lower-bone
+    # tail shortens the chain and forces the foot/ankle to fold unnaturally.
+    end=arm.matrix_world @ foot.tail; base=end.copy(); baseline[name]=tuple(base)
     td=bpy.data.objects.new('CMAI_FootTarget_'+name,None); td.empty_display_type='SPHERE'; td.empty_display_size=.035; td.location=base; td.color=(0.1,0.8,0.2,1); scene.collection.objects.link(td)
     pd=bpy.data.objects.new('CMAI_Pole_'+name,None); pd.empty_display_type='CUBE'; pd.empty_display_size=.025
-    # Pole remains on the original knee-bend side, offset conservatively.
-    knee=arm.matrix_world @ upper.tail; pd.location=knee+Vector((-0.18,0,0.18)); pd.color=(0.9,0.2,0.1,1); scene.collection.objects.link(pd)
+    # Derive the pole from the original hip-knee-foot bending plane instead
+    # of assuming a global direction. This preserves each leg's natural bend
+    # side and accounts for mirrored/rolled bones.
+    hip=arm.matrix_world @ upper.head; knee=arm.matrix_world @ upper.tail; end=base
+    incoming=(knee-hip).normalized(); outgoing=(end-knee).normalized()
+    plane_normal=incoming.cross(outgoing)
+    if plane_normal.length < 1e-6: plane_normal=Vector((0,0,1))
+    pole_dir=plane_normal.normalized().cross(incoming).normalized()
+    pd.location=knee+pole_dir*0.18; pd.color=(0.9,0.2,0.1,1); scene.collection.objects.link(pd)
     c=upper.constraints.new('IK'); c.name='CMAI_Grounded_IK_'+name; c.target=td; c.pole_target=pd; c.chain_count=2; c.pole_angle=0.0; c.influence=1.0
     targets.append((name,td,base))
 for frame in range(1,25):

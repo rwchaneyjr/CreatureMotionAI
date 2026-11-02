@@ -93,7 +93,7 @@ def main():
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--start", type=int, default=1)
     parser.add_argument("--end", type=int, default=None)
-    parser.add_argument("--ground-z", type=float, default=0.0)
+    parser.add_argument("--ground-z", type=float, default=None, help="Ground height; omit to derive from the first pose")
     parser.add_argument("--tolerance", type=float, default=0.03)
     parser.add_argument("--proxy-ratio", type=float, default=0.08)
     args = parser.parse_args()
@@ -101,13 +101,21 @@ def main():
     armature = next((o for o in bpy.context.scene.objects if o.type == "ARMATURE"), None)
     if not mesh or not armature:
         raise RuntimeError("Scene must contain a mesh and armature")
+    ground_z = args.ground_z
+    if ground_z is None:
+        ground_z = bpy.context.scene.get("CMAI_GROUND_Z")
+    if ground_z is None:
+        bpy.context.scene.frame_set(args.start)
+        feet = [bone_point(armature, root + "_03", tail=True) for root in LEG_ROOTS]
+        feet = [p.z for p in feet if p is not None]
+        ground_z = min(feet) if feet else 0.0
     end = args.end or bpy.context.scene.frame_end
     rows = []
     for frame in range(args.start, end + 1):
         bpy.context.scene.frame_set(frame)
         depsgraph = bpy.context.evaluated_depsgraph_get()
         evaluated, mesh_data, collision_tree, triangles = build_self_collision_bvh(mesh, depsgraph, args.proxy_ratio)
-        row = check_frame(mesh, armature, args.ground_z, args.tolerance, collision_tree, triangles)
+        row = check_frame(mesh, armature, ground_z, args.tolerance, collision_tree, triangles)
         evaluated.to_mesh_clear()
         if row["self_collision_pairs"]:
             # Decimation can create artificial triangle crossings. Confirm
@@ -118,7 +126,7 @@ def main():
             exact_vertices = [mesh.matrix_world @ v.co for v in exact_data.vertices]
             exact_triangles = [tuple(t.vertices) for t in exact_data.loop_triangles]
             exact_tree = BVHTree.FromPolygons(exact_vertices, exact_triangles, all_triangles=True)
-            exact_row = check_frame(mesh, armature, args.ground_z, args.tolerance, exact_tree, exact_triangles)
+            exact_row = check_frame(mesh, armature, ground_z, args.tolerance, exact_tree, exact_triangles)
             exact_eval.to_mesh_clear()
             exact_row["proxy_self_collision_pairs"] = row["self_collision_pairs"]
             exact_row["self_collision_confirmed"] = bool(exact_row["self_collision_pairs"])

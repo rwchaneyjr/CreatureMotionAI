@@ -19,6 +19,11 @@ def main() -> None:
     parser.add_argument("mapping", type=Path)
     parser.add_argument("schedule", type=Path)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--allow-temporal",
+        action="store_true",
+        help="Allow short-gap temporal_estimate landmarks as provisional inputs.",
+    )
     args = parser.parse_args()
     tri = json.loads(args.triangulation.read_text(encoding="utf-8"))
     constraints = json.loads(args.constraints.read_text(encoding="utf-8"))
@@ -32,7 +37,10 @@ def main() -> None:
         for root, leg in mapping.get("legs", {}).items():
             hip_name, knee_name, foot_name = leg["landmarks"]
             hip, knee, foot = (joints.get(n, {}) for n in (hip_name, knee_name, foot_name))
-            if any(x.get("state") != "triangulated" for x in (hip, knee, foot)):
+            allowed_states = {"triangulated"}
+            if args.allow_temporal:
+                allowed_states.add("temporal_estimate")
+            if any(x.get("state") not in allowed_states for x in (hip, knee, foot)):
                 legs[root] = {"state": "uncertain", "reason": "missing_landmark"}
                 continue
             target = [float(x) for x in foot["xyz"]]
@@ -45,7 +53,17 @@ def main() -> None:
                 failures.append({"leg": root, "reason": "target_outside_bounded_reach", "distance": distance, "reach": reach})
                 legs[root] = {"state": "rejected", "distance": distance, "reach": reach}
                 continue
-            legs[root] = {"state": "candidate", "foot_target": target, "distance": distance, "reach": reach, "preserve_rest_bend": True, "preserve_foot_orientation": True}
+            states = [hip.get("state"), knee.get("state"), foot.get("state")]
+            legs[root] = {
+                "state": "candidate",
+                "foot_target": target,
+                "distance": distance,
+                "reach": reach,
+                "provisional": any(state == "temporal_estimate" for state in states),
+                "confidence": min(float(x.get("confidence", 0.0)) for x in (hip, knee, foot)),
+                "preserve_rest_bend": True,
+                "preserve_foot_orientation": True,
+            }
         # A frame is Blender-safe only when every leg has an actual bounded
         # IK candidate.  Previously a frame with all legs marked uncertain
         # could pass merely because it had no numeric rejection, which made
@@ -59,7 +77,7 @@ def main() -> None:
             "accepted_for_blender": all_legs_solved and not failures and plan.get("mode") != "hold_rest_pose",
         })
     accepted = sum(int(x["accepted_for_blender"]) for x in results)
-    result = {"source": str(args.triangulation), "frames": results, "accepted_frames": accepted, "total_frames": len(results), "status": "bounded_ik_candidates_only", "note": "No Blender rotations were written. Candidates require armature-space conversion and visual validation."}
+    result = {"source": str(args.triangulation), "frames": results, "accepted_frames": accepted, "total_frames": len(results), "status": "bounded_ik_candidates_only", "allow_temporal": args.allow_temporal, "note": "No Blender rotations were written. Candidates require armature-space conversion and visual validation; temporal candidates remain provisional."}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2), encoding="utf-8")
     print(json.dumps({"output": str(args.output), "accepted_frames": accepted, "total_frames": len(results)}, indent=2))

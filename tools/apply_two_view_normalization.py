@@ -7,14 +7,14 @@ def main():
     data=json.loads(a.observations.read_text(encoding='utf-8')); norm=json.loads(a.normalization.read_text(encoding='utf-8'))['normalization']; gs=norm['median_side_ground_row']; gf=norm['median_front_ground_row']; scale=norm['height_scale_front_to_side']; panel_w=640.0
     rows=[]
     for row in data.get('frames',[]):
-        out={k:dict(v) for k,v in row.items() if k not in ('camera_A','camera_B')}
+        out={k:v for k,v in row.items() if k not in ('camera_A','camera_B')}
         for key,src in (('camera_A','camera_A'),('camera_B','camera_B')):
             cam=row.get(src,{})
             lms={}
             for name,item in cam.get('landmarks',{}).items():
                 n=dict(item)
                 if key=='camera_B' and 'y' in n:
-                    n['y']=gf-(float(n['y'])-gf)*scale+gs-gs
+                    n['y']=gs-(float(n['y'])-gf)*scale
                     n['normalization']='ground_scale_only'
                 lms[name]=n
             out[key]={'landmarks':lms}

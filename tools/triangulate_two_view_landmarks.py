@@ -26,6 +26,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--min-confidence", type=float, default=0.5)
     parser.add_argument("--approval", type=Path, help="Optional approval manifest; only approved landmarks are triangulated")
+    parser.add_argument("--max-frames", type=int, default=0, help="Limit processing to the first N frames; 0 means all")
     args = parser.parse_args()
     obs = json.loads(args.observations.read_text(encoding="utf-8"))
     cal = json.loads(args.calibration.read_text(encoding="utf-8"))
@@ -37,6 +38,8 @@ def main() -> None:
     pa = projection_matrix(cameras["A_side"])
     pb = projection_matrix(cameras["B_front"])
     frames = obs.get("frames", obs if isinstance(obs, list) else [])
+    if args.max_frames > 0:
+        frames = frames[:args.max_frames]
     result_frames = []
     for frame in frames:
         a = frame.get("camera_A", {}).get("landmarks", {})
