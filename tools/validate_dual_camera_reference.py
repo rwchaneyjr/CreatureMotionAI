@@ -69,6 +69,16 @@ def validate(input_path: Path, max_frames: int = 120) -> dict:
     correlation = None
     if n >= 3 and np.std(left_values[:n]) > 1e-8 and np.std(right_values[:n]) > 1e-8:
         correlation = float(np.corrcoef(left_values[:n], right_values[:n])[0, 1])
+    # Compare normalized temporal motion energy as well. Different viewpoints
+    # naturally produce different optical-flow vectors, so raw flow correlation
+    # alone is too strict for side/front cameras.
+    energy_correlation = None
+    if n >= 3:
+        left_energy = np.asarray(left_values[:n], dtype=np.float64)
+        right_energy = np.asarray(right_values[:n], dtype=np.float64)
+        left_energy = (left_energy - left_energy.mean()) / (left_energy.std() + 1e-8)
+        right_energy = (right_energy - right_energy.mean()) / (right_energy.std() + 1e-8)
+        energy_correlation = float(np.corrcoef(left_energy, right_energy)[0, 1])
     # Correlation is a warning signal, not proof of geometric correctness.
     # When max_frames limits the sample, do not compare the sample length with
     # the full container frame count. The splitter already performs the full
@@ -78,8 +88,8 @@ def validate(input_path: Path, max_frames: int = 120) -> dict:
     warnings = []
     if correlation is None:
         warnings.append("Insufficient motion variation for a correlation estimate.")
-    elif correlation < 0.25:
-        warnings.append("Panel motion is weakly correlated; views may be unsynchronized or contain different takes.")
+    elif correlation < 0.25 and (energy_correlation is None or energy_correlation < 0.15):
+        warnings.append("Panel motion events are weakly correlated; views may be unsynchronized or contain different takes.")
     report = {
         "input": str(input_path),
         "width": width,
@@ -91,8 +101,9 @@ def validate(input_path: Path, max_frames: int = 120) -> dict:
         "left_fps": 0.0,
         "right_fps": 0.0,
         "motion_correlation": correlation,
+        "motion_energy_correlation": energy_correlation,
         "valid_container": valid,
-        "ready_for_triangulation": bool(valid and correlation is not None and correlation >= 0.25),
+        "ready_for_triangulation": bool(valid and ((correlation is not None and correlation >= 0.25) or (energy_correlation is not None and energy_correlation >= 0.15))),
         "warnings": warnings,
     }
     return report

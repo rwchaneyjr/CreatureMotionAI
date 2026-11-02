@@ -23,6 +23,7 @@ def bbox(m):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--video", required=True); p.add_argument("--render-dir", required=True)
+    p.add_argument("--panel", choices=("left", "right", "full"), default="left")
     p.add_argument("--output", required=True); p.add_argument("--montage", required=True)
     args = p.parse_args()
     cap = cv2.VideoCapture(args.video); rows = []; scores = []
@@ -31,6 +32,9 @@ def main():
         render_path = Path(args.render_dir) / f"blender_{frame:03d}.png"
         render = cv2.imread(str(render_path))
         if not ok or render is None: continue
+        if args.panel != "full":
+            mid = ref.shape[1] // 2
+            ref = ref[:, :mid] if args.panel == "left" else ref[:, mid:]
         ref = cv2.resize(ref, (render.shape[1], render.shape[0]))
         rm, bm = mask(ref, reference=True), mask(render, reference=False)
         intersection = np.logical_and(rm > 0, bm > 0).sum()
@@ -47,7 +51,7 @@ def main():
     cap.release()
     montage = np.vstack(rows) if rows else np.zeros((10, 10, 3), np.uint8)
     Path(args.montage).parent.mkdir(parents=True, exist_ok=True); cv2.imwrite(args.montage, montage)
-    report = {"frames": scores, "mean_silhouette_iou": float(np.mean([s["silhouette_iou"] for s in scores])) if scores else 0.0,
+    report = {"frames": scores, "panel": args.panel, "mean_silhouette_iou": float(np.mean([s["silhouette_iou"] for s in scores])) if scores else 0.0,
               "interpretation": "Higher IoU is better; silhouette comparison cannot resolve hidden legs or joint identity."}
     Path(args.output).write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps(report))

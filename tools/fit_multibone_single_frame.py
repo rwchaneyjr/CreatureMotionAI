@@ -29,9 +29,13 @@ def run(blender, expr):
 def main():
     p=argparse.ArgumentParser(); p.add_argument('--blend',required=True); p.add_argument('--reference',required=True); p.add_argument('--output',required=True); p.add_argument('--blender',required=True); p.add_argument('--work',required=True); a=p.parse_args()
     work=Path(a.work); work.mkdir(parents=True,exist_ok=True); current=work/'current.blend'; shutil.copy2(a.blend,current)
+    reference_image=cv2.imread(str(a.reference))
+    if reference_image is None:
+        raise RuntimeError(f'Could not read reference image: {a.reference}')
+    ref_h, ref_w = reference_image.shape[:2]
     def render(expr_path):
         expr=f"""import bpy
-bpy.ops.wm.open_mainfile(filepath=r'{current.resolve()}'); s=bpy.context.scene; s.render.engine='BLENDER_WORKBENCH'; s.display.shading.light='STUDIO'; s.display.shading.color_type='TEXTURE'; s.render.resolution_x=1280; s.render.resolution_y=720; s.render.resolution_percentage=100; s.frame_set(1); s.render.filepath=r'{expr_path.resolve()}'; bpy.ops.render.render(write_still=True)"""
+bpy.ops.wm.open_mainfile(filepath=r'{current.resolve()}'); s=bpy.context.scene; s.render.engine='BLENDER_WORKBENCH'; s.display.shading.light='STUDIO'; s.display.shading.color_type='TEXTURE'; s.render.resolution_x={ref_w}; s.render.resolution_y={ref_h}; s.render.resolution_percentage=100; s.frame_set(1); s.render.filepath=r'{expr_path.resolve()}'; bpy.ops.render.render(write_still=True)"""
         run(a.blender,expr)
     baseline_img=work/'baseline.png'; render(baseline_img); base=score(a.reference,baseline_img); best=base['combined']; accepted=[]; trials=[]
     legs=['Leg_Front.L','Leg_Front.R','Leg_MidFront.L','Leg_MidFront.R','Leg_MidRear.L','Leg_MidRear.R','Leg_Rear.L','Leg_Rear.R']
@@ -44,7 +48,7 @@ bpy.ops.wm.open_mainfile(filepath=r'{current.resolve()}'); s=bpy.context.scene; 
             expr=f"""import bpy, math
 bpy.ops.wm.open_mainfile(filepath=r'{current.resolve()}'); s=bpy.context.scene; s.frame_set(1); a=next(o for o in bpy.data.objects if o.type=='ARMATURE'); p=a.pose.bones.get(r'{bone}')
 if p: p.rotation_mode='XYZ'; r=p.rotation_euler.copy(); r[0]+=math.radians({deg}); p.rotation_euler=r
-s.render.engine='BLENDER_WORKBENCH'; s.display.shading.light='STUDIO'; s.display.shading.color_type='TEXTURE'; s.render.resolution_x=1280; s.render.resolution_y=720; s.render.resolution_percentage=100; s.render.filepath=r'{trial.resolve()}'; bpy.ops.render.render(write_still=True)"""
+s.render.engine='BLENDER_WORKBENCH'; s.display.shading.light='STUDIO'; s.display.shading.color_type='TEXTURE'; s.render.resolution_x={ref_w}; s.render.resolution_y={ref_h}; s.render.resolution_percentage=100; s.render.filepath=r'{trial.resolve()}'; bpy.ops.render.render(write_still=True)"""
             run(a.blender,expr); raw=score(a.reference,trial); penalized=raw['combined']-abs(deg)/1800.0; local.append((penalized,deg,raw))
         local.sort(reverse=True,key=lambda x:x[0]); val,deg,raw=local[0]; trials.append({'bone':bone,'best_deg':deg,'score':raw,'penalized':val})
         if val>best+0.002:
