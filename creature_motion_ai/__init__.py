@@ -16,7 +16,7 @@ except ModuleNotFoundError:  # Allow portable analysis/solver modules outside Bl
     bpy = None
 
 if bpy is not None:
-    from . import operators, panel, skeleton_operator, animation_operator
+    from . import operators, panel, skeleton_operator, animation_operator, landmark_review
 
 
 def register():
@@ -25,6 +25,7 @@ def register():
     operators.register()
     skeleton_operator.register()
     animation_operator.register()
+    landmark_review.register()
     panel.register()
 
 
@@ -32,6 +33,7 @@ def unregister():
     if bpy is None:
         return
     panel.unregister()
+    landmark_review.unregister()
     skeleton_operator.unregister()
     animation_operator.unregister()
     operators.unregister()
