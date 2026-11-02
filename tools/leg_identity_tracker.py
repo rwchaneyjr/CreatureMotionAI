@@ -11,6 +11,11 @@ import base64
 import json
 from pathlib import Path
 
+try:
+    import cv2
+except ImportError:  # pragma: no cover - the project environment normally has OpenCV
+    cv2 = None
+
 
 def image_data(path: Path) -> str:
     if not path.exists():
@@ -30,6 +35,28 @@ def pick_image(samples: Path, frame: int, camera: str) -> str:
         if p.exists():
             return image_data(p)
     return ""
+
+
+def visible_on_image(samples: Path, frame: int, camera: str, x: float, y: float) -> bool:
+    """Reject points whose local patch is only the near-white studio background."""
+    if cv2 is None:
+        return True
+    path = samples / f"frame_{frame:06d}_{camera}.png"
+    image = cv2.imread(str(path))
+    if image is None:
+        return False
+    h, w = image.shape[:2]
+    ix, iy = int(round(x)), int(round(y))
+    if not (0 <= ix < w and 0 <= iy < h):
+        return False
+    patch = image[max(0, iy - 5):min(h, iy + 6), max(0, ix - 5):min(w, ix + 6)]
+    if patch.size == 0:
+        return False
+    # White/near-white pixels dominate the background. A real creature patch
+    # has either darker texture or meaningful color saturation.
+    gray = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY)
+    hsv = cv2.cvtColor(patch, cv2.COLOR_BGR2HSV)
+    return bool((float(gray.mean()) < 238.0) or (float(hsv[:, :, 1].mean()) > 24.0))
 
 
 def main() -> None:
@@ -60,13 +87,14 @@ def main() -> None:
         points = []
         for leg in legs:
             for name in leg["landmarks"]:
-                item = None
-                for camera in ("camera_A", "camera_B"):
-                    candidate = row.get(camera, {}).get("landmarks", {}).get(name)
-                    if candidate and candidate.get("rig_gate") == "accepted":
-                        item = candidate
-                        break
-                points.append({"name": name, "leg": leg["id"], "x": float((item or {}).get("x", 0)), "y": float((item or {}).get("y", 0)), "state": "proposal" if item else "estimated", "confidence": float((item or {}).get("confidence", 0.0))})
+                per_camera = {}
+                for camera, image_camera in (("camera_A", "camera_A"), ("camera_B", "camera_B")):
+                    item = row.get(camera, {}).get("landmarks", {}).get(name)
+                    x = float((item or {}).get("x", 0))
+                    y = float((item or {}).get("y", 0))
+                    visible = bool(item and item.get("rig_gate") == "accepted" and visible_on_image(args.samples_dir, frame, image_camera, x, y))
+                    per_camera[camera] = {"x": x, "y": y, "state": "proposal" if visible else "estimated", "confidence": float((item or {}).get("confidence", 0.0)), "visible": visible}
+                points.append({"name": name, "leg": leg["id"], "x": per_camera["camera_A"]["x"], "y": per_camera["camera_A"]["y"], "state": per_camera["camera_A"]["state"], "confidence": per_camera["camera_A"]["confidence"], "camera_A": per_camera["camera_A"], "camera_B": per_camera["camera_B"]})
         initial["frames"].append({"frame": frame, "points": points})
         cards.append({"frame": frame, "a": pick_image(args.samples_dir, frame, "camera_A"), "b": pick_image(args.samples_dir, frame, "camera_B"), "points": points})
     args.output.mkdir(parents=True, exist_ok=True)
@@ -78,7 +106,7 @@ def main() -> None:
 <script>const cards=__CARDS__;const colors={};let reviewed={status:'reviewed_in_browser',frames:[]};
 function abbr(leg){return {'Leg_Front.L':'FL','Leg_Front.R':'FR','Leg_MidFront.L':'MFL','Leg_MidFront.R':'MFR','Leg_MidRear.L':'MRL','Leg_MidRear.R':'MRR','Leg_Rear.L':'RL','Leg_Rear.R':'RR'}[leg]||leg.slice(-2)}
 function jointAbbr(name){return name.includes('_01_')?'H':name.includes('_02_')?'K':'F'}
-function render(){const root=document.querySelector('#root');cards.forEach((c,ci)=>{const box=document.createElement('section');box.className='card';box.innerHTML='<h2>Frame '+c.frame+'</h2><div class="views"><div class="view"><b>Camera A / side</b><img src="'+c.a+'" data-camera="A"><div class="pts"></div></div><div class="view"><b>Camera B / front</b><img src="'+c.b+'" data-camera="B"><div class="pts"></div></div></div>';root.appendChild(box);const frame={frame:c.frame,points:[]};c.points.forEach((p,pi)=>{if(!colors[p.leg])colors[p.leg]=palette(Object.keys(colors).length);if(p.state!=='estimated'){['A','B'].forEach((cam,vi)=>{const holder=box.querySelectorAll('.pts')[vi];const el=document.createElement('div');el.className='pt';el.style.background=colors[p.leg];el.style.left=(p.x/640*100)+'%';el.style.top=(p.y/720*100)+'%';el.innerHTML='<span>'+abbr(p.leg)+'-'+jointAbbr(p.name)+'</span>';el.title=p.leg+' / '+jointAbbr(p.name)+' / '+p.state;el.dataset.x=p.x;el.dataset.y=p.y;el.dataset.name=p.name;el.onpointerdown=e=>drag(e,el,holder);holder.appendChild(el);});}frame.points.push({name:p.name,leg:p.leg,abbreviation:abbr(p.leg)+'-'+jointAbbr(p.name),state:p.state,confidence:p.confidence,camera_A:{x:p.x,y:p.y},camera_B:{x:p.x,y:p.y}})});reviewed.frames.push(frame)});Object.entries(colors).forEach(([k,v])=>{const s=document.createElement('span');s.style.background=v;s.textContent=abbr(k)+' = '+k+' | H hip, K knee, F foot';legend.appendChild(s)})}
+function render(){const root=document.querySelector('#root');cards.forEach((c,ci)=>{const box=document.createElement('section');box.className='card';box.innerHTML='<h2>Frame '+c.frame+'</h2><div class="views"><div class="view"><b>Camera A / side</b><img src="'+c.a+'" data-camera="A"><div class="pts"></div></div><div class="view"><b>Camera B / front</b><img src="'+c.b+'" data-camera="B"><div class="pts"></div></div></div>';root.appendChild(box);const frame={frame:c.frame,points:[]};c.points.forEach((p,pi)=>{if(!colors[p.leg])colors[p.leg]=palette(Object.keys(colors).length);['A','B'].forEach((cam,vi)=>{const q=p['camera_'+cam];if(!q||!q.visible)return;const holder=box.querySelectorAll('.pts')[vi];const el=document.createElement('div');el.className='pt';el.style.background=colors[p.leg];el.style.left=(q.x/640*100)+'%';el.style.top=(q.y/720*100)+'%';el.innerHTML='<span>'+abbr(p.leg)+'-'+jointAbbr(p.name)+'</span>';el.title=p.leg+' / '+jointAbbr(p.name)+' / '+q.state;el.dataset.x=q.x;el.dataset.y=q.y;el.dataset.name=p.name;el.dataset.camera=cam;el.onpointerdown=e=>drag(e,el,holder);holder.appendChild(el);});frame.points.push({name:p.name,leg:p.leg,abbreviation:abbr(p.leg)+'-'+jointAbbr(p.name),camera_A:p.camera_A,camera_B:p.camera_B,state:(p.camera_A.visible||p.camera_B.visible)?'visible':'uncertain'});});reviewed.frames.push(frame)});Object.entries(colors).forEach(([k,v])=>{const s=document.createElement('span');s.style.background=v;s.textContent=abbr(k)+' = '+k+' | H hip, K knee, F foot';legend.appendChild(s)})}
 function palette(i){return ['#e6194b','#f58231','#ffe119','#3cb44b','#42d4f4','#4363d8','#911eb4','#f032e6'][i%8]}
 function drag(ev,el,holder){ev.preventDefault();const move=e=>{const r=holder.getBoundingClientRect();const x=Math.max(0,Math.min(r.width,e.clientX-r.left));const y=Math.max(0,Math.min(r.height,e.clientY-r.top));el.style.left=x/r.width*100+'%';el.style.top=y/r.height*100+'%';el.dataset.x=Math.round(x/r.width*640);el.dataset.y=Math.round(y/r.height*720);el.title=el.dataset.name+' / manual_correction'};const up=()=>{el.releasePointerCapture?.(ev.pointerId);el.onpointermove=null;el.onpointerup=null};el.setPointerCapture?.(ev.pointerId);el.onpointermove=move;el.onpointerup=up}
 document.querySelector('#export').onclick=()=>{reviewed.frames.forEach(f=>f.points.forEach(p=>{const box=[...document.querySelectorAll('.card')].find(x=>x.querySelector('h2').textContent.includes(f.frame));const els=[...box.querySelectorAll('.pt')].filter(x=>x.dataset.name===p.name);if(els.length){p.camera_A={x:+els[0].dataset.x,y:+els[0].dataset.y};p.camera_B={x:+els[1].dataset.x,y:+els[1].dataset.y};p.state='manual_reviewed'}}));const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(reviewed,null,2)],{type:'application/json'}));a.download='leg_identity_reviewed.json';a.click()};render();</script>'''.replace("__CARDS__", payload)
