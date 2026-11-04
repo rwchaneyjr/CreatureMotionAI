@@ -59,6 +59,12 @@ def main():
     mesh.show_wire = False
     mesh.show_all_edges = False
     mesh.display_type = "SOLID"
+    # Remove only temporary rest-pose diagnostic constraints from the input
+    # copy before attaching this solve's moving targets.
+    for pb in rig.pose.bones:
+        for constraint in list(pb.constraints):
+            if constraint.name.startswith("CMAI_Diagnostic_IK_"):
+                pb.constraints.remove(constraint)
     for bone in rig.data.bones:
         try:
             if bone.name.startswith("Leg_"):
@@ -98,7 +104,7 @@ def main():
         lower_bone = rig.data.bones.get(lower_name)
         leg_reach[name] = (upper_bone.length if upper_bone else 0.0) + (lower_bone.length if lower_bone else 0.0)
         if con and args.enable_ik:
-            ik = con.constraints.new("IK"); ik.name = "CMAI_FootContact_IK"; ik.target = target; ik.chain_count = 2
+            ik = con.constraints.new("IK"); ik.name = "CMAI_FootContact_IK"; ik.target = target; ik.chain_count = 3
             ik.influence = 0.0; ik.keyframe_insert("influence", frame=1)
             ik.influence = 1.0; ik.keyframe_insert("influence", frame=2)
             pole = bpy.data.objects.new("CMAI_Pole_" + name, None); bpy.context.collection.objects.link(pole)
@@ -206,7 +212,14 @@ def main():
     scene.render.engine = "BLENDER_WORKBENCH"; scene.display.shading.color_type = "TEXTURE"; scene.display.shading.light = "STUDIO"; scene.render.resolution_x = 1280; scene.render.resolution_y = 720; scene.render.resolution_percentage = 50
     camera = bpy.data.objects.get("CMAI_Calibrated_Side_Camera")
     if camera is None:
-        raise RuntimeError("Calibrated camera CMAI_Calibrated_Side_Camera is missing; calibrate the baseline blend before fitting bones")
+        camera_data = bpy.data.cameras.new("CMAI_Calibrated_Side_Camera")
+        camera = bpy.data.objects.new("CMAI_Calibrated_Side_Camera", camera_data)
+        bpy.context.collection.objects.link(camera)
+        camera.location = (3.5, -6.0, 2.2)
+        target = rig.matrix_world.translation
+        camera.rotation_euler = (target - camera.location).to_track_quat("-Z", "Y").to_euler()
+        camera.data.lens = 52
+        camera["cmai_fallback_camera"] = True
     scene.camera = camera
     render_dir = root / "eight_leg_render"; render_dir.mkdir(exist_ok=True)
     sample_frames = sorted(set([1, 6, 12, 18, 24, len(observations)]))

@@ -6,6 +6,7 @@ pose and can be called for every frame before a pose is accepted.
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import bpy
@@ -96,7 +97,8 @@ def main():
     parser.add_argument("--ground-z", type=float, default=None, help="Ground height; omit to derive from the first pose")
     parser.add_argument("--tolerance", type=float, default=0.03)
     parser.add_argument("--proxy-ratio", type=float, default=0.08)
-    args = parser.parse_args()
+    argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
+    args = parser.parse_args(argv)
     mesh = find_mesh()
     armature = next((o for o in bpy.context.scene.objects if o.type == "ARMATURE"), None)
     if not mesh or not armature:

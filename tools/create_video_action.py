@@ -3,7 +3,7 @@
 This is a first-pass video adapter: it uses silhouette motion for global/body
 and tail motion, never copies an imported FBX Action.
 """
-import argparse, json
+import argparse, json, sys
 from pathlib import Path
 import bpy
 from mathutils import Euler
@@ -14,7 +14,8 @@ def main():
     parser.add_argument("--model", required=True)
     parser.add_argument("--motion", required=True)
     parser.add_argument("--output", required=True)
-    args = parser.parse_args()
+    argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
+    args = parser.parse_args(argv)
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.fbx(filepath=args.model)
     rig = next(o for o in bpy.context.scene.objects if o.type == "ARMATURE")

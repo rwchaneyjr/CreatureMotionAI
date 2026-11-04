@@ -1,0 +1,5 @@
+import json
+from pathlib import Path
+root=Path(__file__).resolve().parents[1]
+report={'video':str(root/'data/reference/goodspilitbalisk.mp4'),'status':'SUSPECTED_MOTION_INCONSISTENCY','two_view_triangulation':'STOPPED','reason':'Visual inspection suggests corresponding panels may show different leg movements; no shared 3D animation is assumed.','preserved_work':['original 38-bone rig','validated analytical solver','matrix-to-pose conversion','existing tracking artifacts'],'single_camera_plan':{'source_panel':'side-view panel of split video','candidate_leg':'requires manual selection/verification','keyframes_required':[1,61,121,181,240],'fit_method':'projected model-guided 2D fitting with fixed Blender camera and SciPy least_squares if available','constraints':['bone lengths','anatomical limits','ground contact','rest pose'],'action_generation':'blocked_until_five_2d_keyframes_verified'},'current_blocker':'No manually verified 2D leg landmarks are present; existing candidates are provisional model predictions.'}
+(root/'data/generated/goodspilitbalisk_motion_inconsistency.json').write_text(json.dumps(report,indent=2))

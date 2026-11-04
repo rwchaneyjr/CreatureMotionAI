@@ -8,10 +8,13 @@ import sys
 from pathlib import Path
 
 import bpy
+import gpu
+from gpu_extras.batch import batch_for_shader
 from bpy.props import EnumProperty, IntProperty, StringProperty
 
 
 CAMERAS = (("camera_A", "Camera A / side", "LEFT"), ("camera_B", "Camera B / front", "RIGHT"))
+LEG_COLORS = ((0.9,0.2,0.2,1),(0.2,0.8,0.2,1),(0.2,0.5,1,1),(1,0.6,0.1,1),(0.8,0.2,0.8,1),(0.1,0.8,0.8,1),(1,0.9,0.1,1),(0.7,0.7,0.7,1))
 
 
 def _load_data(scene):
@@ -70,6 +73,80 @@ class CMAI_OT_review_correct(bpy.types.Operator):
         context.window_manager.modal_handler_add(self)
         self.report({'INFO'}, "Click the corrected landmark position; Esc cancels")
         return {'RUNNING_MODAL'}
+
+
+def _all_points(row, camera):
+    return row.get(camera, {}).get("landmarks", {})
+
+
+def _leg_index(name):
+    for i, leg in enumerate(("Front.L", "Front.R", "MidFront.L", "MidFront.R", "MidRear.L", "MidRear.R", "Rear.L", "Rear.R")):
+        if name.startswith("Leg_" + leg): return i
+    return 0
+
+
+class CMAI_OT_review_all_landmarks(bpy.types.Operator):
+    bl_idname = "cmai.review_all_landmarks"
+    bl_label = "Review All Landmarks"
+    _handle = None
+    _active = None
+    _dragging = False
+
+    def _draw(self, context):
+        try: _, data = _load_data(context.scene); row = _frame(data, context.scene.cmai_landmark_review_frame); pts = _all_points(row, context.scene.cmai_landmark_review_camera)
+        except Exception: return
+        shader = gpu.shader.from_builtin('UNIFORM_COLOR')
+        region = context.region
+        def xy(item): return region.view2d.view_to_region(float(item.get('x',0)), float(item.get('y',0)), clip=False)
+        for leg in ("Front.L", "Front.R", "MidFront.L", "MidFront.R", "MidRear.L", "MidRear.R", "Rear.L", "Rear.R"):
+            names=[f"Leg_{leg}_{part}" for part in ("hip","knee","ankle","foot")]
+            coords=[xy(pts[n]) for n in names if n in pts and pts[n].get('visible')]
+            if len(coords)>1:
+                batch=batch_for_shader(shader,'LINE_STRIP',{'pos':coords}); shader.bind(); shader.uniform_float('color',LEG_COLORS[_leg_index(names[0])]); batch.draw(shader)
+        for name,item in pts.items():
+            if not item.get('visible'): continue
+            x,y=xy(item); color=(1,1,1,1) if item.get('state')=='manual_reviewed' else (1,0.5,0.1,1) if item.get('state')=='model_prediction' else LEG_COLORS[_leg_index(name)]
+            batch=batch_for_shader(shader,'POINTS',{'pos':[(x,y)]}); shader.bind(); shader.uniform_float('color',color); gpu.state.point_size_set(9); batch.draw(shader)
+
+    def invoke(self, context, event):
+        if context.area.type != 'IMAGE_EDITOR': self.report({'ERROR'}, 'Run from an Image Editor area'); return {'CANCELLED'}
+        if self._handle is None: self._handle=bpy.types.SpaceImageEditor.draw_handler_add(self._draw,(context,), 'WINDOW','POST_PIXEL')
+        context.area.tag_redraw(); context.window_manager.modal_handler_add(self); self.report({'INFO'}, 'Review All active: drag points; click Hide/Uncertain in the panel'); return {'RUNNING_MODAL'}
+
+    def modal(self, context, event):
+        if event.type in {'ESC','RIGHTMOUSE'}:
+            if self._handle: bpy.types.SpaceImageEditor.draw_handler_remove(self._handle,'WINDOW'); self._handle=None
+            context.area.tag_redraw(); return {'CANCELLED'}
+        try: _, data=_load_data(context.scene); row=_frame(data,context.scene.cmai_landmark_review_frame); pts=_all_points(row,context.scene.cmai_landmark_review_camera); view=context.region.view2d.region_to_view(event.mouse_region_x,event.mouse_region_y)
+        except Exception: return {'RUNNING_MODAL'}
+        if event.type=='LEFTMOUSE' and event.value=='PRESS':
+            candidates=[(name,item) for name,item in pts.items() if item.get('visible') and ((float(item.get('x',0))-view[0])**2+(float(item.get('y',0))-view[1])**2)<18**2]
+            if candidates: self._active=min(candidates,key=lambda z:(float(z[1].get('x',0))-view[0])**2+(float(z[1].get('y',0))-view[1])**2)[0]; self._dragging=True
+        elif event.type=='MOUSEMOVE' and self._dragging and self._active:
+            pts[self._active].update({'x':float(view[0]),'y':float(view[1]),'visible':True,'state':'manual_reviewed','confidence':1.0,'source':'native_review_drag'}); Path(bpy.path.abspath(context.scene.cmai_landmark_review_data)).write_text(json.dumps(data,indent=2)); context.area.tag_redraw()
+        elif event.type=='LEFTMOUSE' and event.value=='RELEASE':
+            if self._active:
+                base=pts[self._active]
+                for delta in (-2,-1,1,2):
+                    try:
+                        near=_frame(data,context.scene.cmai_landmark_review_frame+delta); target=_all_points(near,context.scene.cmai_landmark_review_camera).setdefault(self._active,{})
+                        if target.get('state') not in ('manual_reviewed',): target.update({'x':base.get('x'),'y':base.get('y'),'visible':base.get('visible',True),'confidence':0.55,'state':'provisional_prediction','source':'native_review_propagation'})
+                    except Exception: pass
+                Path(bpy.path.abspath(context.scene.cmai_landmark_review_data)).write_text(json.dumps(data,indent=2))
+            self._dragging=False; self._active=None
+        return {'RUNNING_MODAL'}
+
+
+class CMAI_OT_review_frame_step(bpy.types.Operator):
+    bl_idname='cmai.review_frame_step'; bl_label='Step Review Frame'; direction:IntProperty(default=1)
+    def execute(self,context): context.scene.cmai_landmark_review_frame=max(1,min(context.scene.cmai_landmark_review_max_frames,context.scene.cmai_landmark_review_frame+self.direction)); context.area.tag_redraw(); return {'FINISHED'}
+
+
+class CMAI_OT_review_hide_uncertain(bpy.types.Operator):
+    bl_idname='cmai.review_hide_uncertain'; bl_label='Hide / Uncertain'
+    def execute(self,context):
+        try: path,data=_load_data(context.scene); row=_frame(data,context.scene.cmai_landmark_review_frame); item=_all_points(row,context.scene.cmai_landmark_review_camera).get(context.scene.cmai_landmark_review_landmark,{}); item.update({'visible':False,'confidence':0.0,'state':'uncertain_occluded'}); path.write_text(json.dumps(data,indent=2)); context.area.tag_redraw(); return {'FINISHED'}
+        except Exception as exc: self.report({'ERROR'},str(exc)); return {'CANCELLED'}
 
 
 class CMAI_OT_review_track(bpy.types.Operator):
@@ -163,6 +240,12 @@ class CMAI_PT_landmark_review(bpy.types.Panel):
         layout.prop(scene, "cmai_landmark_review_landmark")
         layout.operator("cmai.review_load_image", icon='IMAGE_DATA')
         layout.operator("cmai.review_correct_landmark", icon='PIVOT_CURSOR')
+        layout.operator("cmai.review_all_landmarks", icon='TRACKING')
+        row = layout.row(align=True); op=row.operator("cmai.review_frame_step", text="Previous", icon='TRIA_LEFT'); op.direction=-1; op=row.operator("cmai.review_frame_step", text="Next", icon='TRIA_RIGHT'); op.direction=1
+        layout.operator("cmai.review_hide_uncertain", icon='HIDE_OFF')
+        try:
+            _, data = _load_data(scene); row = _frame(data, scene.cmai_landmark_review_frame); pts = _all_points(row, scene.cmai_landmark_review_camera); reviewed=sum(1 for x in pts.values() if x.get('state')=='manual_reviewed'); uncertain=sum(1 for x in pts.values() if not x.get('visible') or x.get('state','').startswith('uncertain')); layout.label(text=f"Reviewed: {reviewed}  Uncertain: {uncertain}")
+        except Exception: layout.label(text="Reviewed: —  Uncertain: —")
         layout.prop(scene, "cmai_landmark_review_output")
         row = layout.row(align=True)
         op = row.operator("cmai.review_track", text="Track Forward", icon='FORWARD')
@@ -176,7 +259,7 @@ class CMAI_PT_landmark_review(bpy.types.Panel):
         layout.label(text="Hidden points remain uncertain; no guess is added.")
 
 
-CLASSES = (CMAI_OT_review_load_image, CMAI_OT_review_correct, CMAI_OT_review_track, CMAI_OT_review_validate, CMAI_PT_landmark_review)
+CLASSES = (CMAI_OT_review_load_image, CMAI_OT_review_correct, CMAI_OT_review_all_landmarks, CMAI_OT_review_frame_step, CMAI_OT_review_hide_uncertain, CMAI_OT_review_track, CMAI_OT_review_validate, CMAI_PT_landmark_review)
 
 
 def register():
