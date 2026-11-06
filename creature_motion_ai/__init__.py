@@ -3,7 +3,7 @@
 bl_info = {
     "name": "Creature Motion AI",
     "author": "Creature Motion AI",
-    "version": (0, 1, 0),
+    "version": (0, 1, 1),
     "blender": (3, 6, 0),
     "location": "View3D > Sidebar > Creature Motion AI",
     "description": "Prepare creature video motion workflows and extract MP4 frames",
@@ -16,7 +16,7 @@ except ModuleNotFoundError:  # Allow portable analysis/solver modules outside Bl
     bpy = None
 
 if bpy is not None:
-    from . import operators, panel, skeleton_operator, animation_operator, landmark_review
+    from . import operators, panel, skeleton_operator, animation_operator, landmark_review, collision_proxies
 
 
 def register():
@@ -26,6 +26,7 @@ def register():
     skeleton_operator.register()
     animation_operator.register()
     landmark_review.register()
+    collision_proxies.register()
     panel.register()
 
 
@@ -34,6 +35,7 @@ def unregister():
         return
     panel.unregister()
     landmark_review.unregister()
+    collision_proxies.unregister()
     skeleton_operator.unregister()
     animation_operator.unregister()
     operators.unregister()

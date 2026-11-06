@@ -2,6 +2,7 @@ import json
 import os
 import subprocess
 import sys
+import math
 from pathlib import Path
 
 import bpy
@@ -48,6 +49,44 @@ class CMAI_OT_extract_frames(bpy.types.Operator):
         self.report({'INFO'}, result.stdout.strip()[-500:] or "Frames extracted")
         return {'FINISHED'}
 
+class CMAI_OT_show_video_leg_correspondence(bpy.types.Operator):
+    bl_idname = 'cmai.show_video_leg_correspondence'
+    bl_label = 'Show Video Leg / Highlight Chain'
+    bl_description = 'Display frame 26 and highlight the selected three-bone chain'
+    def execute(self, context):
+        scene=context.scene; leg=scene.cmai_annotation_leg
+        arm=next((o for o in bpy.data.objects if o.type=='ARMATURE'),None)
+        if not arm: self.report({'ERROR'},'Select/open the original armature first'); return {'CANCELLED'}
+        chain=[f'{leg}_{i:02d}' for i in (1,2,3)]
+        missing=[n for n in chain if n not in arm.pose.bones]
+        if missing: self.report({'ERROR'},'Missing chain bones: '+', '.join(missing)); return {'CANCELLED'}
+        bpy.context.view_layer.objects.active=arm; arm.select_set(True)
+        bpy.ops.object.mode_set(mode='POSE') if arm.mode!='POSE' else None
+        bpy.ops.pose.select_all(action='DESELECT')
+        for n in chain: arm.data.bones[n].select=True
+        arm.data.bones.active=arm.data.bones[chain[0]]
+        scene['cmai_video_leg_chain']=chain
+        video=Path(r'C:\Users\rober\CreatureMotionAI\data\generated\reference_frame_026_side.png')
+        if video.is_file():
+            old=bpy.data.objects.get('CMAI_Video_Frame26_Reference')
+            if old: bpy.data.objects.remove(old,do_unlink=True)
+            img=bpy.data.images.load(str(video),check_existing=True)
+            empty=bpy.data.objects.new('CMAI_Video_Frame26_Reference',None); empty.empty_display_type='IMAGE'; empty.data=img; empty.empty_display_size=1.22; empty.rotation_euler[1]=math.radians(-90); empty.location=(0.32,0,0.04); empty.hide_render=True; scene.collection.objects.link(empty)
+        self.report({'INFO'},f'Highlighted {leg}: {", ".join(chain)}. Confirm with Confirm Video Leg.')
+        return {'FINISHED'}
+
+class CMAI_OT_confirm_video_leg(bpy.types.Operator):
+    bl_idname = 'cmai.confirm_video_leg'
+    bl_label = 'Confirm Video Leg'
+    bl_description = 'Save the selected video-to-rig leg correspondence without changing the rig'
+    def execute(self, context):
+        scene=context.scene; leg=scene.cmai_annotation_leg; chain=[f'{leg}_{i:02d}' for i in (1,2,3)]
+        arm=next((o for o in bpy.data.objects if o.type=='ARMATURE'),None)
+        if not arm or any(n not in arm.data.bones for n in chain): self.report({'ERROR'},'Selected chain is not available'); return {'CANCELLED'}
+        path=Path(r'C:\Users\rober\CreatureMotionAI\data\generated\confirmed_video_leg_correspondence.json'); path.parent.mkdir(parents=True,exist_ok=True)
+        data={'status':'MANUALLY_CONFIRMED','reference_frame':26,'video_frame':'data/generated/reference_frame_026_side.png','leg_label':leg,'chain':chain,'camera_status':'APPROXIMATE_ORTHOGRAPHIC','identity_scope':'User-confirmed correspondence only; not proof of metric 3D pose.'}
+        path.write_text(json.dumps(data,indent=2),encoding='utf-8'); self.report({'INFO'},f'Saved correspondence: {path.name}'); return {'FINISHED'}
+
 class CMAI_OT_set_project_paths(bpy.types.Operator):
     bl_idname = "cmai.set_project_paths"
     bl_label = "Use CreatureMotionAI Project Files"
@@ -61,8 +100,17 @@ class CMAI_OT_set_project_paths(bpy.types.Operator):
         scene.cmai_video = str(video)
         scene.cmai_model = str(model)
         scene.cmai_output = str(root/'data'/'frames')
-        scene.cmai_python = r'C:\Users\rober\AppData\Local\Programs\Python\Python311\python.exe'
+        python_candidates = [root/'.venv-dlc'/'Scripts'/'python.exe', root/'.venv'/'Scripts'/'python.exe', Path(r'C:\Users\rober\AppData\Local\Programs\Python\Python311\python.exe')]
+        scene.cmai_python = str(next((p for p in python_candidates if p.is_file()), Path(sys.executable)))
         scene.cmai_dlc_output = str(root/'data'/'generated'/'dlc_balisk_project')
+        scene.cmai_motion_output = str(root/'data'/'generated'/'motion'/'motion.json')
+        scene.cmai_solver_output = str(root/'data'/'generated'/'cmai_solved.blend')
+        scene.cmai_solver_report = str(root/'data'/'generated'/'cmai_solver_report.json')
+        scene.cmai_camera_report = str(root/'data'/'generated'/'frame26_camera_calibration'/'camera_calibration.json')
+        if hasattr(scene, 'cmai_profile_output'):
+            scene.cmai_profile_output = str(root/'data'/'generated'/'balisk_skeleton_profile.json')
+        if hasattr(scene, 'cmai_motion_targets'):
+            scene.cmai_motion_targets = str(root/'data'/'generated'/'motion_targets.json')
         self.report({'INFO'}, "CreatureMotionAI project paths filled")
         return {'FINISHED'}
 
@@ -126,6 +174,7 @@ class CMAI_OT_launch_single_camera_annotation(bpy.types.Operator):
     bl_idname = "cmai.launch_single_camera_annotation"
     bl_label = "Open Single-Camera Annotation"
     mode: EnumProperty(items=(("leg", "Leg landmarks", "Annotate leg joints"), ("calibration", "Camera landmarks", "Annotate body references"), ("suggestions", "Review DLC suggestions", "Approve or correct provisional labels")), default="leg")
+    leg: EnumProperty(items=(("Leg_Rear.L", "Leg_Rear.L", "Review rear-left landmarks"), ("Leg_Rear.R", "Leg_Rear.R", "Review rear-right landmarks")), default="Leg_Rear.L")
     def execute(self, context):
         # Installed add-ons live under Blender's AppData folder. Resolve the
         # actual workspace from the configured video before launching tools.
@@ -153,7 +202,7 @@ class CMAI_OT_launch_single_camera_annotation(bpy.types.Operator):
         if not script.is_file(): self.report({'ERROR'}, "Single-camera annotation tool is missing"); return {'CANCELLED'}
         log_path=root/'data/generated/single_camera_annotation_launch.log'; log=log_path.open('a',encoding='utf-8')
         log.write(f'LAUNCH mode={self.mode} python={py} script={script} cwd={root}\n'); log.flush()
-        subprocess.Popen([py,str(script),'--mode',self.mode],cwd=str(root),stdout=log,stderr=subprocess.STDOUT)
+        subprocess.Popen([py,str(script),'--mode',self.mode,'--leg',self.leg],cwd=str(root),stdout=log,stderr=subprocess.STDOUT)
         self.report({'INFO'}, f"Started {self.mode} annotation with {Path(py).name}; log: {log_path.name}"); return {'FINISHED'}
 
 
@@ -257,7 +306,7 @@ class CMAI_OT_solve_video_opencv(bpy.types.Operator):
 
 
 def register():
-    for cls in (CMAI_OT_extract_frames, CMAI_OT_set_project_paths, CMAI_OT_prepare_dlc_training, CMAI_OT_validate_dlc_tracker, CMAI_OT_not_ready, CMAI_OT_run_camera_diagnostic, CMAI_OT_export_confirmed_markers, CMAI_OT_launch_single_camera_annotation, CMAI_OT_dlc_train_check, CMAI_OT_dlc_track_check, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv, CMAI_OT_solve_video_opencv):
+    for cls in (CMAI_OT_extract_frames, CMAI_OT_show_video_leg_correspondence, CMAI_OT_confirm_video_leg, CMAI_OT_set_project_paths, CMAI_OT_prepare_dlc_training, CMAI_OT_validate_dlc_tracker, CMAI_OT_not_ready, CMAI_OT_run_camera_diagnostic, CMAI_OT_export_confirmed_markers, CMAI_OT_launch_single_camera_annotation, CMAI_OT_dlc_train_check, CMAI_OT_dlc_track_check, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv, CMAI_OT_solve_video_opencv):
         bpy.utils.register_class(cls)
     bpy.types.Scene.cmai_video = StringProperty(name="MP4 Video", subtype='FILE_PATH')
     bpy.types.Scene.cmai_model = StringProperty(name="Source Model", subtype='FILE_PATH')
@@ -271,11 +320,12 @@ def register():
     bpy.types.Scene.cmai_solver_report = StringProperty(name="Solver Report", subtype='FILE_PATH', default="//data/generated/cmai_solver_report.json")
     bpy.types.Scene.cmai_camera_report = StringProperty(name="Camera Diagnostic", subtype='FILE_PATH', default="//data/generated/four_point_camera_fit_report.json")
     bpy.types.Scene.cmai_annotation_mode = EnumProperty(name="Annotation Mode", items=(("leg", "Leg landmarks", ""),("calibration", "Camera landmarks", ""),("suggestions", "Review DLC suggestions", "")), default="leg")
+    bpy.types.Scene.cmai_annotation_leg = EnumProperty(name="Review Leg", items=(("Leg_Rear.L", "Leg_Rear.L", ""),("Leg_Rear.R", "Leg_Rear.R", "")), default="Leg_Rear.L")
 
 
 def unregister():
-    for name in ("cmai_video", "cmai_model", "cmai_output", "cmai_python", "cmai_dlc_output", "cmai_motion_output", "cmai_start", "cmai_end", "cmai_solver_output", "cmai_solver_report", "cmai_camera_report", "cmai_annotation_mode"):
+    for name in ("cmai_video", "cmai_model", "cmai_output", "cmai_python", "cmai_dlc_output", "cmai_motion_output", "cmai_start", "cmai_end", "cmai_solver_output", "cmai_solver_report", "cmai_camera_report", "cmai_annotation_mode", "cmai_annotation_leg"):
         delattr(bpy.types.Scene, name)
-    for cls in reversed((CMAI_OT_extract_frames, CMAI_OT_set_project_paths, CMAI_OT_prepare_dlc_training, CMAI_OT_validate_dlc_tracker, CMAI_OT_not_ready, CMAI_OT_run_camera_diagnostic, CMAI_OT_export_confirmed_markers, CMAI_OT_launch_single_camera_annotation, CMAI_OT_dlc_train_check, CMAI_OT_dlc_track_check, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv, CMAI_OT_solve_video_opencv)):
+    for cls in reversed((CMAI_OT_extract_frames, CMAI_OT_show_video_leg_correspondence, CMAI_OT_confirm_video_leg, CMAI_OT_set_project_paths, CMAI_OT_prepare_dlc_training, CMAI_OT_validate_dlc_tracker, CMAI_OT_not_ready, CMAI_OT_run_camera_diagnostic, CMAI_OT_export_confirmed_markers, CMAI_OT_launch_single_camera_annotation, CMAI_OT_dlc_train_check, CMAI_OT_dlc_track_check, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv, CMAI_OT_solve_video_opencv)):
         bpy.utils.unregister_class(cls)
 

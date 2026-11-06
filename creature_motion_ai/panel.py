@@ -48,14 +48,21 @@ class CMAI_PT_main(bpy.types.Panel):
         op=wf.operator("cmai.launch_single_camera_annotation", text="Open Single-Camera Annotation", icon='TRACKER'); op.mode=scene.cmai_annotation_mode
         wf.operator("cmai.review_all_landmarks", text="Open Native Landmark Review", icon='IMAGE_DATA')
         wf.label(text="DeepLabCut tracker", icon='TRACKER')
+        wf.prop(scene, "cmai_annotation_leg", text="Review leg")
+        wf.operator("cmai.show_video_leg_correspondence", text="Show Video Leg / Highlight Chain", icon='BONE_DATA')
+        wf.operator("cmai.confirm_video_leg", text="Confirm Video Leg", icon='CHECKMARK')
         # Keep the approval entry point at the top of this section so it is
         # visible even when the sidebar is too short to show every control.
-        op=wf.operator("cmai.launch_single_camera_annotation", text="Review Suggested Labels", icon='CHECKMARK'); op.mode='suggestions'
+        op=wf.operator("cmai.launch_single_camera_annotation", text="Review Suggested Labels", icon='CHECKMARK'); op.mode='suggestions'; op.leg=scene.cmai_annotation_leg
         wf.operator("cmai.create_dlc_project", text="Set Up / Import DLC Labels")
         wf.operator("cmai.dlc_train_check", text="Train Balisk Tracker")
         wf.operator("cmai.validate_dlc_tracker", text="Validate Tracker")
         wf.operator("cmai.dlc_track_check", text="Track Video with DeepLabCut")
         wf.label(text="DLC status: EXPERIMENTAL; 5 anchors only", icon='INFO')
+        wf.label(text="Collision proxies (approximate)", icon='PHYSICS')
+        wf.operator("cmai.build_collision_proxies", text="Build Collision Proxies", icon='MESH_CYLINDER')
+        wf.operator("cmai.show_collision_proxies", text="Show Collision Proxies", icon='HIDE_OFF')
+        wf.operator("cmai.check_animation_collisions", text="Check Animation Collisions", icon='PHYSICS')
         wf.label(text="4  Calibrate Camera DIAGNOSTIC ONLY")
         wf.prop(scene, "cmai_camera_report")
         wf.operator("cmai.run_camera_diagnostic", icon='CAMERA_DATA')
