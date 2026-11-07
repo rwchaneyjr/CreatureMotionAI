@@ -36,10 +36,13 @@ def mouse(event,x,y,flags,param):
    name=POINTS[len(order)];points[name]={'uv':[int(x),int(y)],'visible':True,'confidence':1.0,'source':'user_verified'};order.append(name);state['frames'][str(current_frame)]=points.copy();save();redraw()
 def main():
  global POINTS,OUT,MODE,state,REVIEW_FRAMES,status_message
- ap=argparse.ArgumentParser(); ap.add_argument('--mode',choices=['leg','calibration','suggestions'],default='leg'); a=ap.parse_args(); MODE=a.mode
+ ap=argparse.ArgumentParser(); ap.add_argument('--mode',choices=['leg','calibration','suggestions'],default='leg'); ap.add_argument('--leg',default='Leg_Rear.L'); a=ap.parse_args(); MODE=a.mode; SELECTED_LEG=a.leg
  if MODE=='calibration': POINTS=CAL_POINTS; OUT=ROOT/'data/generated/single_camera_camera_calibration_annotations.json'; state={'video':str(VIDEO),'panel':'left_side','mode':'calibration','frames':{str(f):{} for f in FRAMES}}
  if MODE=='suggestions':
-  OUT=ROOT/'data/generated/dlc_training_suggestions.json'; state=json.loads(OUT.read_text()); REVIEW_FRAMES=sorted(int(x) for x in state['frames']); POINTS=LEG_POINTS
+  OUT=ROOT/'data/generated/dlc_training_suggestions.json' if SELECTED_LEG=='Leg_Rear.L' else ROOT/'data/generated/dlc_training_suggestions_rear_right.json'
+  if not OUT.exists():
+   state={'status':'PROVISIONAL_REVIEW_REQUIRED','leg_identity':SELECTED_LEG,'frames':{str(f):{} for f in [1,61,121,181,240]},'note':'No automatic Rear.R labels were invented; points must be placed and explicitly approved.'}; OUT.write_text(json.dumps(state,indent=2),encoding='utf-8')
+  state=json.loads(OUT.read_text()); REVIEW_FRAMES=sorted(int(x) for x in state['frames']); POINTS=LEG_POINTS
  else: POINTS=LEG_POINTS
  if OUT.exists(): state=json.loads(OUT.read_text())
  global current_frame,image,points,order

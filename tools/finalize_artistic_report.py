@@ -1,0 +1,3 @@
+import json
+from pathlib import Path
+root=Path(__file__).resolve().parents[1]; p=root/'data/generated/cmai_artistic_walk_24f_report.json'; d=json.loads(p.read_text()); d.update({'status':'GENERATED_FOR_VISUAL_REVIEW','preview_mp4':str(root/'data/generated/cmai_artistic_walk_24f_preview.mp4'),'render_dir':str(root/'data/generated/cmai_artistic_walk_render'),'physical_validation':'UNVERIFIED','self_collision':'UNVERIFIED','visual_review':'FAIL_OR_REQUIRES_CORRECTION','note':'The procedural backend generated and rendered all eight legs, but this is not physical validation approval. Review the MP4 before any correction.'}); p.write_text(json.dumps(d,indent=2))
