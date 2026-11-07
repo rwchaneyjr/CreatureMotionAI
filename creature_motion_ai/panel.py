@@ -47,10 +47,19 @@ class CMAI_PT_main(bpy.types.Panel):
         wf.prop(scene, "cmai_annotation_mode")
         op=wf.operator("cmai.launch_single_camera_annotation", text="Open Single-Camera Annotation", icon='TRACKER'); op.mode=scene.cmai_annotation_mode
         wf.operator("cmai.review_all_landmarks", text="Open Native Landmark Review", icon='IMAGE_DATA')
+        pose_box = wf.box()
+        pose_box.label(text="Pose Library", icon='POSE_HLT')
+        pose_box.prop(scene, "cmai_pose_library_data")
+        pose_row = pose_box.row(align=True)
+        pose_row.operator("cmai.pose_library_load", text="Load Approved Observations", icon='IMPORT')
+        pose_row.operator("cmai.pose_library_export_current", text="Save Current Review", icon='EXPORT')
         wf.label(text="DeepLabCut tracker", icon='TRACKER')
         wf.prop(scene, "cmai_annotation_leg", text="Review leg")
         wf.operator("cmai.show_video_leg_correspondence", text="Show Video Leg / Highlight Chain", icon='BONE_DATA')
         wf.operator("cmai.confirm_video_leg", text="Confirm Video Leg", icon='CHECKMARK')
+        wf.operator("cmai.two_view_correspondence", text="Open Two-View Correspondence Editor", icon='CAMERA_DATA')
+        wf.operator("cmai.validate_two_view_geometry", text="Validate Two-View Geometry", icon='CHECKMARK')
+        wf.operator("cmai.diagnose_two_view_leg_events", text="Diagnose Two-View Leg Events", icon='TIME')
         # Keep the approval entry point at the top of this section so it is
         # visible even when the sidebar is too short to show every control.
         op=wf.operator("cmai.launch_single_camera_annotation", text="Review Suggested Labels", icon='CHECKMARK'); op.mode='suggestions'; op.leg=scene.cmai_annotation_leg
@@ -63,6 +72,7 @@ class CMAI_PT_main(bpy.types.Panel):
         wf.operator("cmai.build_collision_proxies", text="Build Collision Proxies", icon='MESH_CYLINDER')
         wf.operator("cmai.show_collision_proxies", text="Show Collision Proxies", icon='HIDE_OFF')
         wf.operator("cmai.check_animation_collisions", text="Check Animation Collisions", icon='PHYSICS')
+        wf.operator("cmai.retarget_cmai_to_fbx", text="Retarget CMAI Action to FBX", icon='ARMATURE_DATA')
         wf.label(text="4  Calibrate Camera DIAGNOSTIC ONLY")
         wf.prop(scene, "cmai_camera_report")
         wf.operator("cmai.run_camera_diagnostic", icon='CAMERA_DATA')

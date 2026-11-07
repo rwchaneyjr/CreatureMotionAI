@@ -93,8 +93,11 @@ class CMAI_OT_set_project_paths(bpy.types.Operator):
     def execute(self, context):
         root = Path(r'C:\Users\rober\CreatureMotionAI')
         scene = context.scene
-        candidates = [root/'data'/'generated'/'dlc_balisk_side_view.mp4', root/'data'/'reference'/'goodspilitbalisk.mp4']
-        video = next((p for p in candidates if p.is_file()), candidates[0])
+        # Preserve an explicitly selected reference.  The two-view file is the
+        # current project default; never silently substitute an older video.
+        current = Path(bpy.path.abspath(getattr(scene, 'cmai_video', '') or ''))
+        candidates = [Path(r'C:\Users\rober\Downloads\2VIEWSBALISK SYNCWALK.mp4'), root/'data'/'generated'/'dlc_balisk_side_view.mp4', root/'data'/'reference'/'goodspilitbalisk.mp4']
+        video = current if current.is_file() else next((p for p in candidates if p.is_file()), candidates[0])
         model_candidates = [root/'data'/'generated'/'original_static_standing.blend', root/'data'/'generated'/'original_static_standing.blend']
         model = next((p for p in model_candidates if p.is_file()), model_candidates[0])
         scene.cmai_video = str(video)
@@ -206,6 +209,81 @@ class CMAI_OT_launch_single_camera_annotation(bpy.types.Operator):
         self.report({'INFO'}, f"Started {self.mode} annotation with {Path(py).name}; log: {log_path.name}"); return {'FINISHED'}
 
 
+class CMAI_OT_two_view_correspondence(bpy.types.Operator):
+    bl_idname = "cmai.two_view_correspondence"
+    bl_label = "Open Two-View Correspondence Editor"
+    bl_description = "Pair explicit anatomical clicks across the two video panels"
+
+    def execute(self, context):
+        root = Path(r'C:\Users\rober\CreatureMotionAI')
+        script = root / 'tools' / 'two_view_landmark_editor.py'
+        video = Path(r'C:\Users\rober\Downloads\2VIEWSBALISK SYNCWALK.mp4')
+        output = root / 'data' / 'generated' / 'two_view_verified_correspondences.json'
+        py = Path(r'C:\Users\rober\AppData\Local\Programs\Python\Python311\python.exe')
+        if not py.is_file():
+            py = Path(sys.executable)
+        if not script.is_file():
+            self.report({'ERROR'}, f"Two-view editor missing: {script}")
+            return {'CANCELLED'}
+        if not video.is_file():
+            self.report({'ERROR'}, f"Two-view video missing: {video}")
+            return {'CANCELLED'}
+        log_path = root / 'data' / 'generated' / 'two_view_editor_launch.log'
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        log = log_path.open('a', encoding='utf-8')
+        log.write(f'LAUNCH python={py} script={script} video={video} output={output} cwd={root}\n')
+        log.flush()
+        subprocess.Popen([str(py), str(script), '--video', str(video), '--output', str(output)],
+                         cwd=str(root), stdout=log, stderr=subprocess.STDOUT)
+        self.report({'INFO'}, f"Two-view editor launched; output: {output.name}")
+        return {'FINISHED'}
+
+
+class CMAI_OT_validate_two_view_geometry(bpy.types.Operator):
+    bl_idname = "cmai.validate_two_view_geometry"
+    bl_label = "Validate Two-View Geometry"
+    bl_description = "Validate only manually approved paired correspondences"
+
+    def execute(self, context):
+        root = Path(r'C:\Users\rober\CreatureMotionAI')
+        script = root / 'tools' / 'check_two_view_correspondences.py'
+        inp = root / 'data' / 'generated' / 'two_view_verified_correspondences.json'
+        out = root / 'data' / 'generated' / 'two_view_geometry_report.json'
+        py = Path(r'C:\Users\rober\AppData\Local\Programs\Python\Python311\python.exe')
+        if not py.is_file(): py = Path(sys.executable)
+        if not script.is_file() or not inp.is_file():
+            self.report({'ERROR'}, 'Two-view checker or correspondence file is missing')
+            return {'CANCELLED'}
+        r = subprocess.run([str(py), str(script), '--input', str(inp), '--output', str(out)], cwd=str(root), capture_output=True, text=True)
+        if r.returncode:
+            self.report({'ERROR'}, r.stderr[-500:] or 'Geometry validation failed')
+            return {'CANCELLED'}
+        try:
+            result = json.loads(out.read_text(encoding='utf-8'))
+            status = result.get('status', 'UNVERIFIED')
+            pairs = result.get('valid_pairs', 0)
+        except Exception:
+            status, pairs = 'UNVERIFIED', 0
+        self.report({'INFO'}, f'Two-view geometry: {status} ({pairs} paired points); report saved')
+        return {'FINISHED'}
+
+
+class CMAI_OT_diagnose_two_view_leg_events(bpy.types.Operator):
+    bl_idname = "cmai.diagnose_two_view_leg_events"
+    bl_label = "Diagnose Two-View Leg Events"
+    bl_description = "Compare lower-leg motion events without assuming leg identity"
+    def execute(self, context):
+        root=Path(r'C:\Users\rober\CreatureMotionAI'); script=root/'tools'/'diagnose_two_view_leg_mismatch.py'; video=Path(r'C:\Users\rober\Downloads\2VIEWSBALISK SYNCWALK.mp4'); out=root/'data/generated/two_view_leg_mismatch_report.json'; preview=root/'data/generated/two_view_leg_event_diagnostic.mp4'; py=Path(r'C:\Users\rober\AppData\Local\Programs\Python\Python311\python.exe')
+        if not py.is_file(): py=Path(sys.executable)
+        if not script.is_file() or not video.is_file(): self.report({'ERROR'},'Two-view event diagnostic or video is missing'); return {'CANCELLED'}
+        r=subprocess.run([str(py),str(script),'--video',str(video),'--output',str(out),'--preview',str(preview)],cwd=str(root),capture_output=True,text=True)
+        if r.returncode: self.report({'ERROR'},r.stderr[-500:] or 'Two-view event diagnostic failed'); return {'CANCELLED'}
+        try: status=json.loads(out.read_text(encoding='utf-8')).get('decision','UNVERIFIED')
+        except Exception: status='UNVERIFIED'
+        self.report({'INFO'},f'Two-view leg event diagnostic: {status}; preview saved')
+        return {'FINISHED'}
+
+
 class CMAI_OT_create_dlc_project(bpy.types.Operator):
     bl_idname = "cmai.create_dlc_project"
     bl_label = "Create DeepLabCut Project"
@@ -304,9 +382,22 @@ class CMAI_OT_solve_video_opencv(bpy.types.Operator):
         self.report({'ERROR'}, "Full automatic eight-leg video solve is not implemented; use verified landmark review and the provisional single-leg fitting path")
         return {'CANCELLED'}
 
+class CMAI_OT_retarget_cmai_to_fbx(bpy.types.Operator):
+    bl_idname='cmai.retarget_cmai_to_fbx'; bl_label='Retarget CMAI Action to FBX'
+    bl_description='Bake CMAI motion through rest-relative transforms and export a new FBX copy'
+    def execute(self, context):
+        root=Path(r'C:\Users\rober\CreatureMotionAI'); script=root/'tools'/'retarget_cmai_to_fbx_rest_relative.py'
+        if not script.is_file(): self.report({'ERROR'},'Retarget script is missing'); return {'CANCELLED'}
+        try:
+            r=subprocess.run([bpy.app.binary_path,'--background','--python',str(script)],capture_output=True,text=True,check=False)
+        except OSError as exc: self.report({'ERROR'},str(exc)); return {'CANCELLED'}
+        if r.returncode: self.report({'ERROR'},r.stderr[-600:] or 'FBX retarget failed'); return {'CANCELLED'}
+        self.report({'INFO'},'Rest-relative FBX retarget complete; inspect the generated validation report')
+        return {'FINISHED'}
+
 
 def register():
-    for cls in (CMAI_OT_extract_frames, CMAI_OT_show_video_leg_correspondence, CMAI_OT_confirm_video_leg, CMAI_OT_set_project_paths, CMAI_OT_prepare_dlc_training, CMAI_OT_validate_dlc_tracker, CMAI_OT_not_ready, CMAI_OT_run_camera_diagnostic, CMAI_OT_export_confirmed_markers, CMAI_OT_launch_single_camera_annotation, CMAI_OT_dlc_train_check, CMAI_OT_dlc_track_check, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv, CMAI_OT_solve_video_opencv):
+    for cls in (CMAI_OT_extract_frames, CMAI_OT_show_video_leg_correspondence, CMAI_OT_confirm_video_leg, CMAI_OT_set_project_paths, CMAI_OT_prepare_dlc_training, CMAI_OT_validate_dlc_tracker, CMAI_OT_not_ready, CMAI_OT_run_camera_diagnostic, CMAI_OT_export_confirmed_markers, CMAI_OT_launch_single_camera_annotation, CMAI_OT_two_view_correspondence, CMAI_OT_validate_two_view_geometry, CMAI_OT_diagnose_two_view_leg_events, CMAI_OT_dlc_train_check, CMAI_OT_dlc_track_check, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv, CMAI_OT_solve_video_opencv, CMAI_OT_retarget_cmai_to_fbx):
         bpy.utils.register_class(cls)
     bpy.types.Scene.cmai_video = StringProperty(name="MP4 Video", subtype='FILE_PATH')
     bpy.types.Scene.cmai_model = StringProperty(name="Source Model", subtype='FILE_PATH')
@@ -326,6 +417,6 @@ def register():
 def unregister():
     for name in ("cmai_video", "cmai_model", "cmai_output", "cmai_python", "cmai_dlc_output", "cmai_motion_output", "cmai_start", "cmai_end", "cmai_solver_output", "cmai_solver_report", "cmai_camera_report", "cmai_annotation_mode", "cmai_annotation_leg"):
         delattr(bpy.types.Scene, name)
-    for cls in reversed((CMAI_OT_extract_frames, CMAI_OT_show_video_leg_correspondence, CMAI_OT_confirm_video_leg, CMAI_OT_set_project_paths, CMAI_OT_prepare_dlc_training, CMAI_OT_validate_dlc_tracker, CMAI_OT_not_ready, CMAI_OT_run_camera_diagnostic, CMAI_OT_export_confirmed_markers, CMAI_OT_launch_single_camera_annotation, CMAI_OT_dlc_train_check, CMAI_OT_dlc_track_check, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv, CMAI_OT_solve_video_opencv)):
+    for cls in reversed((CMAI_OT_extract_frames, CMAI_OT_show_video_leg_correspondence, CMAI_OT_confirm_video_leg, CMAI_OT_set_project_paths, CMAI_OT_prepare_dlc_training, CMAI_OT_validate_dlc_tracker, CMAI_OT_not_ready, CMAI_OT_run_camera_diagnostic, CMAI_OT_export_confirmed_markers, CMAI_OT_launch_single_camera_annotation, CMAI_OT_two_view_correspondence, CMAI_OT_validate_two_view_geometry, CMAI_OT_diagnose_two_view_leg_events, CMAI_OT_dlc_train_check, CMAI_OT_dlc_track_check, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv, CMAI_OT_solve_video_opencv, CMAI_OT_retarget_cmai_to_fbx)):
         bpy.utils.unregister_class(cls)
 
