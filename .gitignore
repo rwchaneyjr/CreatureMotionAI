@@ -1,5 +1,7 @@
 # Local Python environments and caches
 .venv/
+.venv-dlc/
+anipose_env/
 **/__pycache__/
 *.py[cod]
 
@@ -8,6 +10,7 @@ models/
 
 # Blender/video/image outputs and temporary experiment artifacts
 data/generated/
+data/frames/
 data/cache/
 data/motion/
 *.blend1
