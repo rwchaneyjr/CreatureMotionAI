@@ -6,7 +6,7 @@ import math
 from pathlib import Path
 
 import bpy
-from bpy.props import StringProperty, IntProperty, EnumProperty
+from bpy.props import StringProperty, IntProperty, EnumProperty, FloatProperty
 
 def _project_root_for_scene(scene):
     """Find the workspace when this add-on is installed under Blender AppData."""
@@ -126,6 +126,56 @@ class CMAI_OT_not_ready(bpy.types.Operator):
     def execute(self, context):
         self.report({'INFO'}, self.message)
         return {'CANCELLED'}
+
+
+class CMAI_OT_track_side_panel(bpy.types.Operator):
+    bl_idname = "cmai.track_side_panel"
+    bl_label = "Track Side Panel (Provisional)"
+    bl_description = "Run the existing OpenCV tracker on the selected video's side panel; results remain provisional"
+
+    def execute(self, context):
+        scene = context.scene
+        video = bpy.path.abspath(scene.cmai_video)
+        if not os.path.isfile(video):
+            self.report({'ERROR'}, 'Select an existing MP4 video first')
+            return {'CANCELLED'}
+        # Reuse the existing OpenCV operator and output schema. This entry point
+        # deliberately does not promote any observation to manual_verified.
+        result = bpy.ops.cmai.analyze_video_opencv()
+        if 'FINISHED' not in result:
+            return result
+        self.report({'INFO'}, f'Provisional side-panel analysis saved to {scene.cmai_motion_output}')
+        return {'FINISHED'}
+
+
+class CMAI_OT_generate_walk(bpy.types.Operator):
+    bl_idname = "cmai.generate_walk"
+    bl_label = "Generate Calibrated Eight-Leg Walk"
+    bl_description = "Generate a bounded per-leg rest-relative gait from the preserved Balisk rig"
+
+    def execute(self, context):
+        root = Path(r'C:\Users\rober\CreatureMotionAI')
+        script = root / 'tools' / 'create_calibrated_eight_leg_walk.py'
+        source = Path(bpy.path.abspath(context.scene.cmai_model or ''))
+        if not source.is_file():
+            source = root / 'data' / 'generated' / 'cmai_balisk_pose_working.blend'
+        output = root / 'data' / 'generated' / 'balisk_calibrated_walk.blend'
+        report = root / 'data' / 'generated' / 'balisk_calibrated_walk_report.json'
+        if not script.is_file() or not source.is_file():
+            self.report({'ERROR'}, 'Clean working rig or walk generator is missing')
+            return {'CANCELLED'}
+        try:
+            result = subprocess.run([bpy.app.binary_path, '--background', '--python', str(script), '--',
+                '--blend', str(source), '--output', str(output), '--report', str(report), '--stride', str(context.scene.cmai_stride), '--lift', str(context.scene.cmai_lift), '--limits', bpy.path.abspath(context.scene.cmai_joint_limits)],
+                cwd=str(root), capture_output=True, text=True, timeout=300)
+        except Exception as exc:
+            self.report({'ERROR'}, f'Walk generation failed: {exc}')
+            return {'CANCELLED'}
+        if result.returncode or not output.is_file():
+            self.report({'ERROR'}, (result.stderr or result.stdout)[-500:] or 'Walk generation failed')
+            return {'CANCELLED'}
+        self.report({'INFO'}, f'Walk saved: {output}')
+        return {'FINISHED'}
 
 
 class CMAI_OT_run_camera_diagnostic(bpy.types.Operator):
@@ -397,7 +447,7 @@ class CMAI_OT_retarget_cmai_to_fbx(bpy.types.Operator):
 
 
 def register():
-    for cls in (CMAI_OT_extract_frames, CMAI_OT_show_video_leg_correspondence, CMAI_OT_confirm_video_leg, CMAI_OT_set_project_paths, CMAI_OT_prepare_dlc_training, CMAI_OT_validate_dlc_tracker, CMAI_OT_not_ready, CMAI_OT_run_camera_diagnostic, CMAI_OT_export_confirmed_markers, CMAI_OT_launch_single_camera_annotation, CMAI_OT_two_view_correspondence, CMAI_OT_validate_two_view_geometry, CMAI_OT_diagnose_two_view_leg_events, CMAI_OT_dlc_train_check, CMAI_OT_dlc_track_check, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv, CMAI_OT_solve_video_opencv, CMAI_OT_retarget_cmai_to_fbx):
+    for cls in (CMAI_OT_extract_frames, CMAI_OT_show_video_leg_correspondence, CMAI_OT_confirm_video_leg, CMAI_OT_track_side_panel, CMAI_OT_generate_walk, CMAI_OT_set_project_paths, CMAI_OT_prepare_dlc_training, CMAI_OT_validate_dlc_tracker, CMAI_OT_not_ready, CMAI_OT_run_camera_diagnostic, CMAI_OT_export_confirmed_markers, CMAI_OT_launch_single_camera_annotation, CMAI_OT_two_view_correspondence, CMAI_OT_validate_two_view_geometry, CMAI_OT_diagnose_two_view_leg_events, CMAI_OT_dlc_train_check, CMAI_OT_dlc_track_check, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv, CMAI_OT_solve_video_opencv, CMAI_OT_retarget_cmai_to_fbx):
         bpy.utils.register_class(cls)
     bpy.types.Scene.cmai_video = StringProperty(name="MP4 Video", subtype='FILE_PATH')
     bpy.types.Scene.cmai_model = StringProperty(name="Source Model", subtype='FILE_PATH')
@@ -412,11 +462,14 @@ def register():
     bpy.types.Scene.cmai_camera_report = StringProperty(name="Camera Diagnostic", subtype='FILE_PATH', default="//data/generated/four_point_camera_fit_report.json")
     bpy.types.Scene.cmai_annotation_mode = EnumProperty(name="Annotation Mode", items=(("leg", "Leg landmarks", ""),("calibration", "Camera landmarks", ""),("suggestions", "Review DLC suggestions", "")), default="leg")
     bpy.types.Scene.cmai_annotation_leg = EnumProperty(name="Review Leg", items=(("Leg_Rear.L", "Leg_Rear.L", ""),("Leg_Rear.R", "Leg_Rear.R", "")), default="Leg_Rear.L")
+    bpy.types.Scene.cmai_joint_limits = StringProperty(name="Joint Limits Profile", subtype='FILE_PATH', default="//data/generated/cmai_joint_limits.json")
+    bpy.types.Scene.cmai_stride = FloatProperty(name="Stride", default=0.012, min=0.0, max=0.1)
+    bpy.types.Scene.cmai_lift = FloatProperty(name="Foot Lift", default=0.010, min=0.0, max=0.1)
 
 
 def unregister():
-    for name in ("cmai_video", "cmai_model", "cmai_output", "cmai_python", "cmai_dlc_output", "cmai_motion_output", "cmai_start", "cmai_end", "cmai_solver_output", "cmai_solver_report", "cmai_camera_report", "cmai_annotation_mode", "cmai_annotation_leg"):
+    for name in ("cmai_video", "cmai_model", "cmai_output", "cmai_python", "cmai_dlc_output", "cmai_motion_output", "cmai_start", "cmai_end", "cmai_solver_output", "cmai_solver_report", "cmai_camera_report", "cmai_annotation_mode", "cmai_annotation_leg", "cmai_joint_limits", "cmai_stride", "cmai_lift"):
         delattr(bpy.types.Scene, name)
-    for cls in reversed((CMAI_OT_extract_frames, CMAI_OT_show_video_leg_correspondence, CMAI_OT_confirm_video_leg, CMAI_OT_set_project_paths, CMAI_OT_prepare_dlc_training, CMAI_OT_validate_dlc_tracker, CMAI_OT_not_ready, CMAI_OT_run_camera_diagnostic, CMAI_OT_export_confirmed_markers, CMAI_OT_launch_single_camera_annotation, CMAI_OT_two_view_correspondence, CMAI_OT_validate_two_view_geometry, CMAI_OT_diagnose_two_view_leg_events, CMAI_OT_dlc_train_check, CMAI_OT_dlc_track_check, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv, CMAI_OT_solve_video_opencv, CMAI_OT_retarget_cmai_to_fbx)):
+    for cls in reversed((CMAI_OT_extract_frames, CMAI_OT_show_video_leg_correspondence, CMAI_OT_confirm_video_leg, CMAI_OT_track_side_panel, CMAI_OT_generate_walk, CMAI_OT_set_project_paths, CMAI_OT_prepare_dlc_training, CMAI_OT_validate_dlc_tracker, CMAI_OT_not_ready, CMAI_OT_run_camera_diagnostic, CMAI_OT_export_confirmed_markers, CMAI_OT_launch_single_camera_annotation, CMAI_OT_two_view_correspondence, CMAI_OT_validate_two_view_geometry, CMAI_OT_diagnose_two_view_leg_events, CMAI_OT_dlc_train_check, CMAI_OT_dlc_track_check, CMAI_OT_create_dlc_project, CMAI_OT_analyze_video_opencv, CMAI_OT_solve_video_opencv, CMAI_OT_retarget_cmai_to_fbx)):
         bpy.utils.unregister_class(cls)
 

@@ -21,12 +21,13 @@ def bbox(img):
     return best
 
 def main():
-    p=argparse.ArgumentParser(); p.add_argument('--video',required=True); p.add_argument('--output',required=True); p.add_argument('--frames',default='60,120,180'); a=p.parse_args()
+    p=argparse.ArgumentParser(); p.add_argument('--video',required=True); p.add_argument('--output',required=True); p.add_argument('--frames',default='60,120,180'); p.add_argument('--side-panel',action='store_true'); a=p.parse_args()
     out=Path(a.output); (out/'frames').mkdir(parents=True,exist_ok=True); (out/'overlays').mkdir(parents=True,exist_ok=True)
     indices=[int(x) for x in a.frames.split(',')]; cap=cv2.VideoCapture(a.video); rows=[]; meta=[]
     for idx in indices:
         cap.set(cv2.CAP_PROP_POS_FRAMES,idx); ok,img=cap.read()
         if not ok: continue
+        if a.side_panel: img=img[:, :img.shape[1]//2]
         h,w=img.shape[:2]; bb=bbox(img)
         if not bb: continue
         x,y,bw,bh,_=bb; sx=lambda q:x+q*bw; sy=lambda q:y+q*bh
@@ -54,6 +55,6 @@ def main():
                 z=lookup.get((frame,part),{'x':'','y':'','likelihood':'低'})
                 row += [z.get('x',''),z.get('y',''),z.get('likelihood','')]
             wr.writerow(row)
-    report={'video':str(Path(a.video).resolve()),'frames':indices,'landmarks':PARTS,'proposed_rows':len(rows),'manual_review_required':sum(x['low_confidence_labels'] for x in meta),'format':'DLC single-animal CSV-compatible multi-index table plus long review CSV','deeplabcut_installed':False,'note':'Proposals are heuristic silhouette/geometry estimates; no labels are approved as accurate.'}
+    report={'video':str(Path(a.video).resolve()),'panel':'side' if a.side_panel else 'full','frames':indices,'landmarks':PARTS,'proposed_rows':len(rows),'manual_review_required':sum(x['low_confidence_labels'] for x in meta),'format':'DLC single-animal CSV-compatible multi-index table plus long review CSV','deeplabcut_installed':False,'note':'Proposals are heuristic silhouette/geometry estimates; no labels are approved as accurate.'}
     (out/'proposal_report.json').write_text(json.dumps(report,indent=2),encoding='utf-8'); print(json.dumps(report,indent=2))
 if __name__=='__main__': main()

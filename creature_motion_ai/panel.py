@@ -42,6 +42,8 @@ class CMAI_PT_main(bpy.types.Panel):
         wf.operator("cmai.set_project_paths", text="Use CreatureMotionAI Project Files", icon='FILE_FOLDER')
         wf.label(text="2  Load Rig        READY (open/select armature)")
         wf.label(text="3  Track Landmarks PARTIAL (review required)")
+        wf.label(text="Primary mode: side panel; front panel optional", icon='INFO')
+        wf.operator("cmai.track_side_panel", text="Track Side Panel (Provisional)", icon='TRACKER')
         op=wf.operator("cmai.launch_single_camera_annotation", text="REVIEW SUGGESTED LABELS", icon='CHECKMARK'); op.mode='suggestions'
         wf.operator("cmai.prepare_dlc_training", text="Prepare DLC Training Data", icon='FILE_TICK')
         wf.prop(scene, "cmai_annotation_mode")
@@ -57,9 +59,11 @@ class CMAI_PT_main(bpy.types.Panel):
         wf.prop(scene, "cmai_annotation_leg", text="Review leg")
         wf.operator("cmai.show_video_leg_correspondence", text="Show Video Leg / Highlight Chain", icon='BONE_DATA')
         wf.operator("cmai.confirm_video_leg", text="Confirm Video Leg", icon='CHECKMARK')
-        wf.operator("cmai.two_view_correspondence", text="Open Two-View Correspondence Editor", icon='CAMERA_DATA')
-        wf.operator("cmai.validate_two_view_geometry", text="Validate Two-View Geometry", icon='CHECKMARK')
-        wf.operator("cmai.diagnose_two_view_leg_events", text="Diagnose Two-View Leg Events", icon='TIME')
+        optional = wf.box()
+        optional.label(text="Optional: independent front-view reference", icon='CAMERA_DATA')
+        optional.operator("cmai.two_view_correspondence", text="Open Two-View Correspondence Editor", icon='CAMERA_DATA')
+        optional.operator("cmai.validate_two_view_geometry", text="Validate Two-View Geometry", icon='CHECKMARK')
+        optional.operator("cmai.diagnose_two_view_leg_events", text="Diagnose Two-View Leg Events", icon='TIME')
         # Keep the approval entry point at the top of this section so it is
         # visible even when the sidebar is too short to show every control.
         op=wf.operator("cmai.launch_single_camera_annotation", text="Review Suggested Labels", icon='CHECKMARK'); op.mode='suggestions'; op.leg=scene.cmai_annotation_leg
@@ -73,6 +77,13 @@ class CMAI_PT_main(bpy.types.Panel):
         wf.operator("cmai.show_collision_proxies", text="Show Collision Proxies", icon='HIDE_OFF')
         wf.operator("cmai.check_animation_collisions", text="Check Animation Collisions", icon='PHYSICS')
         wf.operator("cmai.retarget_cmai_to_fbx", text="Retarget CMAI Action to FBX", icon='ARMATURE_DATA')
+        walk = wf.box()
+        walk.label(text="Calibrated gait (per-leg rest-relative)", icon='ANIM')
+        walk.prop(scene, "cmai_stride")
+        walk.prop(scene, "cmai_lift")
+        walk.prop(scene, "cmai_joint_limits")
+        walk.operator("cmai.generate_walk", text="Generate Calibrated Eight-Leg Walk", icon='POSE_HLT')
+        walk.label(text="Output: balisk_calibrated_walk.blend", icon='INFO')
         wf.label(text="4  Calibrate Camera DIAGNOSTIC ONLY")
         wf.prop(scene, "cmai_camera_report")
         wf.operator("cmai.run_camera_diagnostic", icon='CAMERA_DATA')
