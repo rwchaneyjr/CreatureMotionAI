@@ -3,7 +3,9 @@ import sys
 from pathlib import Path
 from mathutils import Vector
 
-blend, frame1_path, frame12_path, pair_path = sys.argv[sys.argv.index('--') + 1:]
+args = sys.argv[sys.argv.index('--') + 1:]
+blend, frame1_path, frame12_path, pair_path = args[:4]
+compare_frame = int(args[4]) if len(args) > 4 else 12
 bpy.ops.wm.open_mainfile(filepath=str(Path(blend).resolve()))
 scene = bpy.context.scene
 out1 = Path(frame1_path).resolve()
@@ -36,7 +38,7 @@ def render(frame, path):
     bpy.ops.render.render(write_still=True)
 
 render(1, out1)
-render(12, out12)
+render(compare_frame, out12)
 
 i1 = bpy.data.images.load(str(out1), check_existing=False)
 i2 = bpy.data.images.load(str(out12), check_existing=False)

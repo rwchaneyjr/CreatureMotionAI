@@ -1,10 +1,12 @@
 import bpy,sys,json
 from pathlib import Path
 from mathutils import Vector
-blend,out=sys.argv[sys.argv.index('--')+1:]
+args=sys.argv[sys.argv.index('--')+1:]
+blend,out=args[:2]
+leg=args[2] if len(args)>2 else 'Front.L'
 bpy.ops.wm.open_mainfile(filepath=str(Path(blend).resolve()))
 arm=bpy.data.objects.get('CrimsonSpineBehemoth_Rig')
-names=['Leg_Front.L_01','Leg_Front.L_02','Leg_Front.L_03']
+names=[f'Leg_{leg}_{i:02d}' for i in (1,2,3)]
 rows=[]
 arm_inv=arm.matrix_world.inverted()
 for n in names:
@@ -14,5 +16,5 @@ for n in names:
  local=(parent.matrix_local.inverted()@m) if parent else m
  rows.append({'name':n,'parent':parent.name if parent else None,'head_world':[float(x) for x in hw],'tail_world':[float(x) for x in tw],'head_armature':[float(x) for x in (arm_inv@hw)],'tail_armature':[float(x) for x in (arm_inv@tw)],'length':float(b.length),'rotation_mode':b.rotation_mode,'rest_matrix':[[float(m[r][c]) for c in range(4)] for r in range(4)],'parent_relative_rest':[[float(local[r][c]) for c in range(4)] for r in range(4)]})
 root=Vector(rows[0]['head_armature'])
-Path(out).write_text(json.dumps({'status':'FRONT_L_CHAIN_EXPORTED_PARENT_RELATIVE','armature':arm.name,'chain_root_armature':list(root),'bones':rows},indent=2),encoding='utf-8')
+Path(out).write_text(json.dumps({'status':'CHAIN_EXPORTED_PARENT_RELATIVE','leg':leg,'armature':arm.name,'chain_root_armature':list(root),'bones':rows},indent=2),encoding='utf-8')
 print(json.dumps({'output':out,'bones':len(rows)}))

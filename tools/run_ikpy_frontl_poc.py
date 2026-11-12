@@ -14,17 +14,18 @@ def main():
     root=np.array(d['chain_root_armature'],float)
     p=[np.array(x['head_armature'],float)-root for x in b]+[np.array(b[-1]['tail_armature'],float)-root]
     seg=[p[i+1]-p[i] for i in range(3)]
-    # IKPy chain in the measured Blender world basis.  Each link preserves the
-    # measured rest translation; the bend axis is derived from the rest chain.
+    # IKPy chain in the measured Blender world basis. Blender rotates each
+    # pose bone about its head. Therefore L01 has no pre-rotation translation;
+    # each following link carries the preceding bone segment to the next joint.
     n=np.cross(seg[0],seg[1]); n=n/np.linalg.norm(n)
     # IKPy expects the terminal link to be a fixed end-effector.  The prior
     # version marked the third revolute link as terminal/active, which makes
     # IKPy 4.4.x build malformed bounds during optimization.
     links=[OriginLink(),
-           URDFLink('FrontL_01',seg[0],np.zeros(3),rotation=n,bounds=(-math.pi,math.pi)),
-           URDFLink('FrontL_02',seg[1],np.zeros(3),rotation=n,bounds=(-math.pi,math.pi)),
-           URDFLink('FrontL_03',seg[2],np.zeros(3),rotation=n,bounds=(-math.pi,math.pi)),
-           URDFLink('FrontL_end',np.zeros(3),np.zeros(3),joint_type='fixed',bounds=(0.0,0.0))]
+           URDFLink('FrontL_01',np.zeros(3),np.zeros(3),rotation=n,bounds=(-math.pi,math.pi)),
+           URDFLink('FrontL_02',seg[0],np.zeros(3),rotation=n,bounds=(-math.pi,math.pi)),
+           URDFLink('FrontL_03',seg[1],np.zeros(3),rotation=n,bounds=(-math.pi,math.pi)),
+           URDFLink('FrontL_end',seg[2],np.zeros(3),joint_type='fixed',bounds=(0.0,0.0))]
     chain=Chain(links,active_links_mask=[False,True,True,True,False],name='CMAI_FrontL_IKPy')
     rest_target=p[-1]
     # A three-bone planar chain cannot reach an arbitrary world-Z offset if
@@ -65,6 +66,8 @@ def main():
             ori=Rotation.from_matrix(rel).as_rotvec()/0.03
             prior=np.array([q[1], q[2], q[3]])*0.05
             return np.r_[pos, ori, prior]
+        initial=np.asarray(initial, dtype=float).copy(); initial[0]=0.0; initial[4]=0.0
+        initial[3]=float(np.clip(initial[3], -0.149, 0.149))
         return least_squares(residual, initial, bounds=([-1e-9,-1.5,-1.5,-0.15,-1e-9],[1e-9,1.5,1.5,0.15,1e-9]), max_nfev=500).x
     for name,t in targets.items():
         sol=constrained_solution(t, chain.inverse_kinematics(t,initial_position=neutral))

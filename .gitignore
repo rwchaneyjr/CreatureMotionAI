@@ -1,5 +1,8 @@
 # Local Python environments and caches
 .venv/
+.venv-pinocchio/
+.venv-solvers/
+external/
 .venv-dlc/
 anipose_env/
 **/__pycache__/
