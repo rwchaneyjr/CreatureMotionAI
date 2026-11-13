@@ -70,13 +70,19 @@ def solve_rest_relative_two_link(hip, target, upper_length, lower_length, bend_n
         return {"status": "REJECTED", "reason": "unreachable_target"}
     direction = axis.normalized()
     normal = bend_normal.normalized() if bend_normal.length > 1e-8 else Vector((0, 0, 1))
-    side = normal.cross(direction).normalized()
-    bend = direction.cross(side).normalized()
+    # The knee offset belongs IN the bend plane, perpendicular to the reach.
+    # For normal=(knee-hip).cross(target-hip), direction.cross(normal)
+    # retains the original side of the knee. A double cross returned the
+    # plane normal itself and bent the leg out of its anatomical plane.
+    bend = direction.cross(normal)
+    if bend.length < 1e-8:
+        return {"status": "REJECTED", "reason": "degenerate_bend_plane"}
+    bend.normalize()
     along = (upper_length**2 - lower_length**2 + distance**2) / (2.0 * distance)
     height = math.sqrt(max(0.0, upper_length**2 - along**2))
     knee = hip + direction * along + bend * height
     knee_angle = math.acos(max(-1.0, min(1.0, (upper_length**2 + lower_length**2 - distance**2) / (2.0 * upper_length * lower_length))))
-    if knee_angle < min_knee_angle:
+    if math.pi - knee_angle < min_knee_angle:
         return {"status": "REJECTED", "reason": "near_full_extension", "knee_angle": knee_angle}
     return {"status": "PASS", "hip": hip, "knee": knee, "foot": target, "knee_angle": knee_angle, "bend_normal": normal}
 

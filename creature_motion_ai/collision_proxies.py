@@ -66,6 +66,20 @@ def _segments(arm):
             b=arm.pose.bones[n]; out.append({'bone':n,'region':'BODY','a':arm.matrix_world@b.head,'b':arm.matrix_world@b.tail,'r':min(b.length*.14,.05)})
     return out
 
+def segments_for_chains(arm, chains, body_bones=()):
+    """Build the existing capsule checks from a supplied creature profile."""
+    segments=[]
+    for region, names in chains.items():
+        for name in names:
+            bone=arm.pose.bones[name]
+            segments.append({'bone':name,'region':region,'a':arm.matrix_world@bone.head,
+                             'b':arm.matrix_world@bone.tail,'r':_radius_for_bone(arm,name)})
+    for name in body_bones:
+        bone=arm.pose.bones[name]
+        segments.append({'bone':name,'region':'BODY','a':arm.matrix_world@bone.head,
+                         'b':arm.matrix_world@bone.tail,'r':min(bone.length*.14,.05)})
+    return segments
+
 def _segdist(a,b,c,d):
     # Closest distance between two 3D segments, robust enough for proxy gating.
     u=b-a; v=d-c; w=a-c; A=u.dot(u); B=u.dot(v); C=v.dot(v); D=u.dot(w); E=v.dot(w); den=A*C-B*B

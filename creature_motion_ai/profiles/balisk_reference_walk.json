@@ -1,0 +1,110 @@
+{
+  "forward_world": [
+    0.0,
+    -1.0,
+    0.0
+  ],
+  "phase_offsets": {
+    "Front.R": 0.95,
+    "MidFront.R": 0.325,
+    "MidRear.R": 0.35,
+    "Rear.R": 0.525,
+    "Front.L": 0.45,
+    "MidFront.L": 0.825,
+    "MidRear.L": 0.85,
+    "Rear.L": 0.025
+  },
+  "phase_evidence": "Visible patch lift peaks approximately rear 13, middle 20/21, front 36. Front repeated peak at 75 suggests 39 frames; a 40-frame template gives three loops in 120 frames. R-side assignment is provisional; L-side half-cycle offsets are modeled, not measured. Extra visible patch V2 has unresolved anatomical correspondence.",
+  "cycle_frames": 40,
+  "duty_factor": 0.65,
+  "shared_stride": 0.13,
+  "lift_fraction": 0.23,
+  "body_bob": 0.003,
+  "keyframe_phases": [
+    0,
+    0.15,
+    0.3,
+    0.45,
+    0.6,
+    0.65,
+    0.72,
+    0.825,
+    0.93,
+    1
+  ],
+  "minimum_knee_flexion_degrees": 8,
+  "maximum_knee_flexion_degrees": 135,
+  "world_planted_support": true,
+  "contact_xy_tolerance": 0.0008,
+  "stance_offsets": {
+    "Rear.L": [
+      0,
+      0.08,
+      0
+    ],
+    "Rear.R": [
+      0,
+      0.16,
+      0
+    ]
+  },
+  "schema_version": 1,
+  "name": "Balisk review walk",
+  "root_bone": "Root",
+  "body_height": 0.07,
+  "inward": 0.2,
+  "chains": {
+    "Front.L": [
+      "Leg_Front.L_01",
+      "Leg_Front.L_02",
+      "Leg_Front.L_03"
+    ],
+    "Front.R": [
+      "Leg_Front.R_01",
+      "Leg_Front.R_02",
+      "Leg_Front.R_03"
+    ],
+    "MidFront.L": [
+      "Leg_MidFront.L_01",
+      "Leg_MidFront.L_02",
+      "Leg_MidFront.L_03"
+    ],
+    "MidFront.R": [
+      "Leg_MidFront.R_01",
+      "Leg_MidFront.R_02",
+      "Leg_MidFront.R_03"
+    ],
+    "MidRear.L": [
+      "Leg_MidRear.L_01",
+      "Leg_MidRear.L_02",
+      "Leg_MidRear.L_03"
+    ],
+    "MidRear.R": [
+      "Leg_MidRear.R_01",
+      "Leg_MidRear.R_02",
+      "Leg_MidRear.R_03"
+    ],
+    "Rear.L": [
+      "Leg_Rear.L_01",
+      "Leg_Rear.L_02",
+      "Leg_Rear.L_03"
+    ],
+    "Rear.R": [
+      "Leg_Rear.R_01",
+      "Leg_Rear.R_02",
+      "Leg_Rear.R_03"
+    ]
+  },
+  "mapping_status": "Original rig chains validated; reference leg identities UNVERIFIED",
+  "latest_review_video": "balisk_eight_leg_review_5sec.mp4",
+  "solver_provenance": {
+    "waypoint_backend": "rest_relative_two_link",
+    "ikpy_v13": "preserved separate adapter; not generalized by assuming identical axes",
+    "pinocchio_midrearL": "local X verified only in its exported per-bone rest basis; external retargeting not part of this builder yet"
+  },
+  "body_bones": [
+    "Body_01",
+    "Body_02",
+    "Body_03"
+  ]
+}

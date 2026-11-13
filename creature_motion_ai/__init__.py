@@ -1,12 +1,12 @@
-"""Creature Motion AI Blender add-on - Milestone 1."""
+"""Creature Motion AI: existing video tools plus the Reference Walk Builder."""
 
 bl_info = {
     "name": "Creature Motion AI",
     "author": "Creature Motion AI",
-    "version": (0, 1, 1),
+    "version": (0, 2, 0),
     "blender": (3, 6, 0),
     "location": "View3D > Sidebar > Creature Motion AI",
-    "description": "Prepare creature video motion workflows and extract MP4 frames",
+    "description": "Review creature motion, fit standing poses, and build validated waypoint walks",
     "category": "Animation",
 }
 
@@ -16,7 +16,7 @@ except ModuleNotFoundError:  # Allow portable analysis/solver modules outside Bl
     bpy = None
 
 if bpy is not None:
-    from . import operators, panel, skeleton_operator, animation_operator, landmark_review, collision_proxies
+    from . import operators, panel, skeleton_operator, animation_operator, landmark_review, collision_proxies, reference_walk_ui
 
 
 def register():
@@ -28,11 +28,13 @@ def register():
     landmark_review.register()
     collision_proxies.register()
     panel.register()
+    reference_walk_ui.register()
 
 
 def unregister():
     if bpy is None:
         return
+    reference_walk_ui.unregister()
     panel.unregister()
     landmark_review.unregister()
     collision_proxies.unregister()

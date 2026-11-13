@@ -1,5 +1,11 @@
 # Creature Motion AI
 
+The add-on now includes a **Reference Walk Builder** for the integrated
+standing-fit → waypoint → walking Action → validation → five-second preview
+workflow. See [the workflow guide](docs/reference_walk_builder.md) for tested
+scope, installation and incomplete stages. Earlier milestone notes below
+describe the original tools, whose buttons remain available.
+
 Milestone 1 provides a Blender sidebar and a safe MP4 frame extractor. Machine-learning packages stay outside Blender's Python.
 
 ## Install the add-on
