@@ -137,9 +137,53 @@ def create_walk(scene,arm,mesh,out,standing,setups,selected,baseline,apply_chain
                     p.keyframe_insert("location",frame=1,group="B - "+leg); p.keyframe_insert("scale",frame=1,group="B - "+leg)
             targets_report[leg].append(dict(result,frame=frame))
         print("KEYED "+leg+" "+json.dumps(cfg),flush=True)
+    # Optional validated rear-leg baseline.  This is deliberately applied
+    # before interpolation so the E2E generator cannot invent new rear-knee
+    # geometry from shared stride/lift targets.  The JSON is extracted from
+    # the same rig and contains evaluated pose bases for the four rear chains.
+    baseline_path = config.get("validated_rear_baseline_path")
+    if baseline_path:
+        baseline_data = json.loads(open(baseline_path, encoding="utf-8").read())
+        rear_legs = set(baseline_data.get("legs", []))
+        by_frame = {int(row["frame"]): row["legs"] for row in baseline_data.get("frames", [])}
+        rear_bones = {bone for leg in rear_legs for bone in by_frame.get(1, {}).get(leg, {}).get("basis", {})}
+        if rear_bones:
+            for layer in action.layers:
+                for strip in layer.strips:
+                    for bag in strip.channelbags:
+                        for curve in list(bag.fcurves):
+                            if any(f'pose.bones["{bone}"]' in curve.data_path for bone in rear_bones):
+                                bag.fcurves.remove(curve)
+        for frame in range(1, cycle + 2):
+            source = by_frame.get(frame)
+            if not source:
+                continue
+            reset_pose(frame)
+            for leg in rear_legs:
+                for bone_name, values in source.get(leg, {}).get("basis", {}).items():
+                    if bone_name not in arm.pose.bones:
+                        continue
+                    pose_bone = arm.pose.bones[bone_name]
+                    pose_bone.rotation_mode = "QUATERNION"
+                    # Set the rotation mode before assigning matrix_basis.  In
+                    # Blender, changing rotation_mode after matrix_basis can
+                    # reinterpret the basis through the previous Euler mode;
+                    # this was the Rear.L-only baseline mapping regression.
+                    pose_bone.matrix_basis = Matrix(values)
+                    pose_bone.keyframe_insert("rotation_quaternion", frame=frame, group="B - "+leg)
+
     for curve in action_curves(action):
         for k in curve.keyframe_points:
-            k.interpolation="BEZIER"; k.handle_left_type="AUTO_CLAMPED"; k.handle_right_type="AUTO_CLAMPED"
+            # Bezier interpolation of quaternion components can leave the
+            # valid rest-pose bend plane between waypoints.  That produced
+            # the backward/inward rear-knee fold in the E2E walk.  Keep body
+            # translation and scalar channels smooth, but interpolate pose
+            # quaternions linearly so Blender never invents a curved joint
+            # rotation between anatomically valid waypoints.
+            if "rotation_quaternion" in curve.data_path:
+                k.interpolation="LINEAR"
+            else:
+                k.interpolation="BEZIER"; k.handle_left_type="AUTO_CLAMPED"; k.handle_right_type="AUTO_CLAMPED"
         if len(curve.keyframe_points)>1: curve.modifiers.new("CYCLES")
     (out/"walk_configuration.json").write_text(json.dumps(config,indent=2))
     if failed:
