@@ -3,10 +3,10 @@
 bl_info = {
     "name": "Creature Motion AI",
     "author": "Creature Motion AI",
-    "version": (0, 2, 0),
+    "version": (0, 4, 0),
     "blender": (3, 6, 0),
     "location": "View3D > Sidebar > Creature Motion AI",
-    "description": "Review creature motion, fit standing poses, and build validated waypoint walks",
+    "description": "Analyze reference video and rig anatomy before building validated waypoint walks",
     "category": "Animation",
 }
 

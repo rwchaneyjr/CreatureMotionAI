@@ -27,6 +27,19 @@ every external-solver mapping for every leg. Those adapters remain available.
 The builder requires Blender 4.4+ Action slots; execution is tested on Blender
 5.2.2. Existing legacy operators retain their names and behavior.
 
+## Automatic creature detection
+
+The **Detect Creature Automatically** control proposes limb chains from the
+deform-bone hierarchy, connected geometry, outward direction, terminal downward
+direction, joint bend, and weak name hints. It writes an anatomy report and an
+unconfirmed rig profile. It does not silently animate an uncertain mapping.
+
+Review the selected chains and their confidence in the saved JSON. A profile
+must be explicitly marked `confirmed: true` before **Generate Walk Preview**
+will run. The current detector supports connected three-bone limbs and one
+skinned mesh; it is a proposal system for bipeds, quadrupeds, six-legged,
+eight-legged, and higher-leg-count rigs, not proof of universal support.
+
 ## Stage meanings and current scope
 
 | Control | Implementation |
