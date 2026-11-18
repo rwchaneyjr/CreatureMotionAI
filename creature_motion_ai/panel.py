@@ -49,6 +49,9 @@ class CMAI_PT_main(bpy.types.Panel):
         wf.prop(scene, "cmai_annotation_mode")
         op=wf.operator("cmai.launch_single_camera_annotation", text="Open Single-Camera Annotation", icon='TRACKER'); op.mode=scene.cmai_annotation_mode
         wf.operator("cmai.review_all_landmarks", text="Open Native Landmark Review", icon='IMAGE_DATA')
+        wf.operator("cmai.verify_reference_leg", text="Verify Reference Leg", icon='TRACKER')
+        wf.prop(scene, "cmai_reference_leg_identity")
+        wf.operator("cmai.reference_leg_approve_save", text="Approve & Save", icon='CHECKMARK')
         pose_box = wf.box()
         pose_box.label(text="Pose Library", icon='POSE_HLT')
         pose_box.prop(scene, "cmai_pose_library_data")

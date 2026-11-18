@@ -1,12 +1,12 @@
 {
-  "video": "C:\\Users\\rober\\Downloads\\video (2).mp4",
+  "video": "C:\\Users\\rober\\Downloads\\8leggedSIDEbalaskWALK.mp4",
   "fps": 24.0,
   "frame_count": 240,
   "width": 1280,
   "height": 720,
   "start_frame": 0,
-  "end_frame_exclusive": 30,
-  "frames_written": 30,
+  "end_frame_exclusive": 24,
+  "frames_written": 24,
   "files": [
     "frame_000001.png",
     "frame_000002.png",
@@ -31,12 +31,6 @@
     "frame_000021.png",
     "frame_000022.png",
     "frame_000023.png",
-    "frame_000024.png",
-    "frame_000025.png",
-    "frame_000026.png",
-    "frame_000027.png",
-    "frame_000028.png",
-    "frame_000029.png",
-    "frame_000030.png"
+    "frame_000024.png"
   ]
 }

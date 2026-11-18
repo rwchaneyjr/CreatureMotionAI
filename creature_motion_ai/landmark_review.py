@@ -5,6 +5,8 @@ import json
 import os
 import subprocess
 import sys
+import shutil
+from datetime import datetime
 from pathlib import Path
 
 import bpy
@@ -18,8 +20,21 @@ CAMERAS = (("camera_A", "Camera A / side", "LEFT"), ("camera_B", "Camera B / fro
 LEG_COLORS = ((0.9,0.2,0.2,1),(0.2,0.8,0.2,1),(0.2,0.5,1,1),(1,0.6,0.1,1),(0.8,0.2,0.8,1),(0.1,0.8,0.8,1),(1,0.9,0.1,1),(0.7,0.7,0.7,1))
 
 
+def _project_path(value):
+    """Resolve project-relative paths independently of the .blend location.
+
+    Blender's // prefix normally means the directory containing the blend file.
+    CreatureMotionAI properties use //data/... as project-relative paths, so a
+    blend saved below data/generated would otherwise produce data/generated/data/.
+    """
+    raw = str(value or "")
+    if raw.startswith("//"):
+        return str((Path(__file__).resolve().parents[1] / raw[2:]).resolve())
+    return bpy.path.abspath(raw)
+
+
 def _load_data(scene):
-    path = bpy.path.abspath(scene.cmai_landmark_review_data)
+    path = _project_path(scene.cmai_landmark_review_data)
     if not path or not Path(path).is_file():
         raise RuntimeError("Choose a landmark JSON file first")
     return Path(path), json.loads(Path(path).read_text(encoding="utf-8"))
@@ -48,6 +63,33 @@ def _save_review_point_to_library(scene, frame, camera, landmark, item):
                     landmarks={landmark: {'x': float(item.get('x', 0)), 'y': float(item.get('y', 0)), 'visible': bool(item.get('visible', True)), 'state': item.get('state', 'manual_reviewed')}},
                     confidence={landmark: float(item.get('confidence', 1.0))}, approval_status='manual_verified')
     save_pose_library(path, data)
+
+class CMAI_OT_verify_reference_leg(bpy.types.Operator):
+    bl_idname = 'cmai.verify_reference_leg'
+    bl_label = 'Verify Reference Leg'
+    def execute(self, context):
+        scene=context.scene; root=Path(__file__).resolve().parents[1]; video=bpy.path.abspath(scene.cmai_video)
+        if not Path(video).is_file(): self.report({'ERROR'},'Select the side reference MP4 first'); return {'CANCELLED'}
+        out=root/'data/generated/reference_leg_review'; out.mkdir(parents=True,exist_ok=True); target=out/'reference_leg_review.json'
+        selector=subprocess.run([bpy.path.abspath(scene.cmai_python) or sys.executable,str(root/'tools/select_clear_reference_frames.py')],capture_output=True,text=True)
+        clear=out/'clear_frames.json'
+        if selector.returncode==0 and clear.exists():
+            selected=json.loads(clear.read_text()).get('selected_frames',[])
+            if selected: scene.cmai_landmark_review_frame=int(selected[0]['frame'])
+        if target.exists(): shutil.copy2(target,out/f'reference_leg_review_backup_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json')
+        cmd=[bpy.path.abspath(scene.cmai_python) or sys.executable,str(root/'tools/prepare_reference_leg_review.py'),str(root),video,str(root/'data/generated/frontL_selected_video_landmarks.json'),str(root/'data/generated/selected_video_dlc_frontL_predictions.json'),str(out),str(scene.cmai_landmark_review_frame)]
+        result=subprocess.run(cmd,capture_output=True,text=True)
+        if result.returncode: self.report({'ERROR'},result.stderr[-500:] or 'Could not prepare review'); return {'CANCELLED'}
+        scene.cmai_landmark_review_data=str(target); scene.cmai_landmark_review_samples=str(out); scene.cmai_reference_leg_identity='UNVERIFIED'
+        self.report({'INFO'},'Frame prepared. Use Image Editor and Open Native Landmark Review to drag points.')
+        return {'FINISHED'}
+
+class CMAI_OT_reference_leg_approve_save(bpy.types.Operator):
+    bl_idname='cmai.reference_leg_approve_save'; bl_label='Approve & Save'
+    def execute(self,context):
+        try:
+            path,data=_load_data(context.scene); data['identity']=context.scene.cmai_reference_leg_identity; data['identity_confirmation']='USER_APPROVED' if data['identity']!='UNVERIFIED' else 'UNVERIFIED'; path.write_text(json.dumps(data,indent=2),encoding='utf-8'); self.report({'INFO'},f'Saved separate correction: {path.name}'); return {'FINISHED'}
+        except Exception as exc: self.report({'ERROR'},str(exc)); return {'CANCELLED'}
 
 class CMAI_OT_pose_library_load(bpy.types.Operator):
     bl_idname='cmai.pose_library_load'; bl_label='Load Approved Pose Observations'
@@ -82,7 +124,7 @@ class CMAI_OT_review_load_image(bpy.types.Operator):
         scene = context.scene
         try:
             _, data = _load_data(scene)
-            root = Path(bpy.path.abspath(scene.cmai_landmark_review_samples))
+            root = Path(_project_path(scene.cmai_landmark_review_samples))
             name = f"frame_{scene.cmai_landmark_review_frame:06d}_{scene.cmai_landmark_review_camera}.png"
             path = root / name
             if not path.is_file():
@@ -92,6 +134,30 @@ class CMAI_OT_review_load_image(bpy.types.Operator):
         except Exception as exc:
             self.report({'ERROR'}, str(exc))
             return {'CANCELLED'}
+        return {'FINISHED'}
+
+
+class CMAI_OT_review_one_click_setup(bpy.types.Operator):
+    bl_idname = "cmai.review_one_click_setup"
+    bl_label = "Load Balisk Review Frame"
+    bl_description = "Fill the standard 24-frame review paths and display the first side frame"
+
+    def execute(self, context):
+        scene = context.scene
+        project = Path(__file__).resolve().parents[1]
+        data = project / "data/generated/goodsplitbalisk_pipeline_v2/leg_identity_review_24_visible_v3/initial_landmarks.json"
+        samples = project / "data/generated/goodsplitbalisk_pipeline_v2/samples"
+        if not data.is_file() or not samples.is_dir():
+            self.report({'ERROR'}, "Standard 24-frame review data is missing")
+            return {'CANCELLED'}
+        scene.cmai_landmark_review_data = str(data)
+        scene.cmai_landmark_review_samples = str(samples)
+        scene.cmai_landmark_review_frame = 1
+        scene.cmai_landmark_review_camera = 'camera_A'
+        scene.cmai_landmark_review_landmark = 'Leg_Front.L_01_head'
+        path = samples / "frame_000001_camera_A.png"
+        _set_image(context.area, path)
+        self.report({'INFO'}, "Loaded side reference frame 1. Select a landmark and click Correct Landmark.")
         return {'FINISHED'}
 
 
@@ -109,6 +175,32 @@ class CMAI_OT_review_correct(bpy.types.Operator):
         self._moving = False
         context.window_manager.modal_handler_add(self)
         self.report({'INFO'}, "Click the corrected landmark position; Esc cancels")
+        return {'RUNNING_MODAL'}
+
+    def modal(self, context, event):
+        if event.type in {'ESC', 'RIGHTMOUSE'}:
+            return {'CANCELLED'}
+        if event.type == 'LEFTMOUSE' and event.value == 'PRESS':
+            try:
+                scene = context.scene
+                path, data = _load_data(scene)
+                row = _frame(data, scene.cmai_landmark_review_frame)
+                camera = scene.cmai_landmark_review_camera
+                landmarks = row.setdefault(camera, {}).setdefault('landmarks', {})
+                name = scene.cmai_landmark_review_landmark
+                view = context.region.view2d.region_to_view(event.mouse_region_x, event.mouse_region_y)
+                item = landmarks.setdefault(name, {})
+                item.update({'x': float(view[0]), 'y': float(view[1]), 'visible': True,
+                             'state': 'manual_reviewed', 'confidence': 1.0,
+                             'source': 'native_review_click'})
+                path.write_text(json.dumps(data, indent=2), encoding='utf-8')
+                _save_review_point_to_library(scene, scene.cmai_landmark_review_frame, camera, name, item)
+                context.area.tag_redraw()
+                self.report({'INFO'}, f'Placed {name} at ({view[0]:.1f}, {view[1]:.1f})')
+                return {'FINISHED'}
+            except Exception as exc:
+                self.report({'ERROR'}, str(exc))
+                return {'CANCELLED'}
         return {'RUNNING_MODAL'}
 
 
@@ -135,11 +227,12 @@ class CMAI_OT_review_all_landmarks(bpy.types.Operator):
         shader = gpu.shader.from_builtin('UNIFORM_COLOR')
         region = context.region
         def xy(item): return region.view2d.view_to_region(float(item.get('x',0)), float(item.get('y',0)), clip=False)
-        for leg in ("Front.L", "Front.R", "MidFront.L", "MidFront.R", "MidRear.L", "MidRear.R", "Rear.L", "Rear.R"):
+        leg_list = ["Reference"] if any(k.startswith('Leg_Reference_') for k in pts) else ("Front.L", "Front.R", "MidFront.L", "MidFront.R", "MidRear.L", "MidRear.R", "Rear.L", "Rear.R")
+        for leg in leg_list:
             names=[f"Leg_{leg}_{part}" for part in ("hip","knee","ankle","foot")]
             coords=[xy(pts[n]) for n in names if n in pts and pts[n].get('visible')]
             if len(coords)>1:
-                batch=batch_for_shader(shader,'LINE_STRIP',{'pos':coords}); shader.bind(); shader.uniform_float('color',LEG_COLORS[_leg_index(names[0])]); batch.draw(shader)
+                batch=batch_for_shader(shader,'LINE_STRIP',{'pos':coords}); shader.bind(); shader.uniform_float('color',(1,0.7,0.1,1) if leg=='Reference' else LEG_COLORS[_leg_index(names[0])]); batch.draw(shader)
         for name,item in pts.items():
             if not item.get('visible'): continue
             x,y=xy(item); color=(1,1,1,1) if item.get('state')=='manual_reviewed' else (1,0.5,0.1,1) if item.get('state')=='model_prediction' else LEG_COLORS[_leg_index(name)]
@@ -160,7 +253,7 @@ class CMAI_OT_review_all_landmarks(bpy.types.Operator):
             candidates=[(name,item) for name,item in pts.items() if item.get('visible') and ((float(item.get('x',0))-view[0])**2+(float(item.get('y',0))-view[1])**2)<18**2]
             if candidates: self._active=min(candidates,key=lambda z:(float(z[1].get('x',0))-view[0])**2+(float(z[1].get('y',0))-view[1])**2)[0]; self._dragging=True
         elif event.type=='MOUSEMOVE' and self._dragging and self._active:
-                pts[self._active].update({'x':float(view[0]),'y':float(view[1]),'visible':True,'state':'manual_reviewed','confidence':1.0,'source':'native_review_drag'}); Path(bpy.path.abspath(context.scene.cmai_landmark_review_data)).write_text(json.dumps(data,indent=2)); _save_review_point_to_library(context.scene, context.scene.cmai_landmark_review_frame, context.scene.cmai_landmark_review_camera, self._active, pts[self._active]); context.area.tag_redraw()
+                pts[self._active].update({'x':float(view[0]),'y':float(view[1]),'visible':True,'state':'manual_reviewed','confidence':1.0,'source':'native_review_drag'}); Path(_project_path(context.scene.cmai_landmark_review_data)).write_text(json.dumps(data,indent=2)); _save_review_point_to_library(context.scene, context.scene.cmai_landmark_review_frame, context.scene.cmai_landmark_review_camera, self._active, pts[self._active]); context.area.tag_redraw()
         elif event.type=='LEFTMOUSE' and event.value=='RELEASE':
             if self._active:
                 base=pts[self._active]
@@ -271,6 +364,7 @@ class CMAI_PT_landmark_review(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
+        layout.operator("cmai.review_one_click_setup", icon='IMPORT')
         layout.prop(scene, "cmai_landmark_review_data")
         layout.prop(scene, "cmai_landmark_review_samples")
         layout.prop(scene, "cmai_landmark_review_frame")
@@ -299,7 +393,7 @@ class CMAI_PT_landmark_review(bpy.types.Panel):
         layout.label(text="Hidden points remain uncertain; no guess is added.")
 
 
-CLASSES = (CMAI_OT_review_load_image, CMAI_OT_review_correct, CMAI_OT_review_all_landmarks, CMAI_OT_review_frame_step, CMAI_OT_review_hide_uncertain, CMAI_OT_review_track, CMAI_OT_review_validate, CMAI_OT_pose_library_load, CMAI_OT_pose_library_export_current, CMAI_PT_landmark_review)
+CLASSES = (CMAI_OT_verify_reference_leg, CMAI_OT_reference_leg_approve_save, CMAI_OT_review_load_image, CMAI_OT_review_one_click_setup, CMAI_OT_review_correct, CMAI_OT_review_all_landmarks, CMAI_OT_review_frame_step, CMAI_OT_review_hide_uncertain, CMAI_OT_review_track, CMAI_OT_review_validate, CMAI_OT_pose_library_load, CMAI_OT_pose_library_export_current, CMAI_PT_landmark_review)
 
 
 def register():
@@ -313,11 +407,12 @@ def register():
     bpy.types.Scene.cmai_landmark_review_output = StringProperty(name="Tracked Output", subtype='FILE_PATH', default="//data/generated/native_tracked_landmarks_24.json")
     bpy.types.Scene.cmai_landmark_review_report = StringProperty(name="Validation Report", subtype='FILE_PATH', default="//data/generated/native_tracking_report.json")
     bpy.types.Scene.cmai_landmark_review_max_frames = IntProperty(name="Max Frames", default=24, min=1, max=241)
+    bpy.types.Scene.cmai_reference_leg_identity = EnumProperty(name='Reference Leg Identity', items=(("UNVERIFIED","Unverified","Do not assign a rig leg"),("Front.L","Front.L",""),("Front.R","Front.R",""),("MidFront.L","MidFront.L",""),("MidFront.R","MidFront.R",""),("MidRear.L","MidRear.L",""),("MidRear.R","MidRear.R",""),("Rear.L","Rear.L",""),("Rear.R","Rear.R","")), default='UNVERIFIED')
     bpy.types.Scene.cmai_pose_library_data = StringProperty(name="Pose Library", subtype='FILE_PATH', default="C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\cmai_pose_library.json")
 
 
 def unregister():
-    for name in ("cmai_landmark_review_data", "cmai_landmark_review_samples", "cmai_landmark_review_frame", "cmai_landmark_review_camera", "cmai_landmark_review_landmark", "cmai_landmark_review_output", "cmai_landmark_review_report", "cmai_landmark_review_max_frames", "cmai_pose_library_data"):
+    for name in ("cmai_landmark_review_data", "cmai_landmark_review_samples", "cmai_landmark_review_frame", "cmai_landmark_review_camera", "cmai_landmark_review_landmark", "cmai_landmark_review_output", "cmai_landmark_review_report", "cmai_landmark_review_max_frames", "cmai_pose_library_data", "cmai_reference_leg_identity"):
         delattr(bpy.types.Scene, name)
     for cls in reversed(CLASSES):
         bpy.utils.unregister_class(cls)
