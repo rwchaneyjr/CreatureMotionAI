@@ -1,0 +1,117 @@
+{
+  "cycle_frames": 40,
+  "fps": 24,
+  "duty_factor": 0.65,
+  "forward_world": [
+    0.0,
+    -1.0,
+    0.0
+  ],
+  "body_bob": 0.003,
+  "shared_stride": 0.13,
+  "phase_offsets": {
+    "Front.R": 0.95,
+    "MidFront.R": 0.325,
+    "MidRear.R": 0.35,
+    "Rear.R": 0.525,
+    "Front.L": 0.45,
+    "MidFront.L": 0.825,
+    "MidRear.L": 0.85,
+    "Rear.L": 0.025
+  },
+  "phase_evidence": "Visible patch lift peaks approximately rear 13, middle 20/21, front 36. Front repeated peak at 75 suggests 39 frames; a 40-frame template gives three loops in 120 frames. R-side assignment is provisional; L-side half-cycle offsets are modeled, not measured. Extra visible patch V2 has unresolved anatomical correspondence.",
+  "reference_matching": "APPROXIMATE_2D_MOTION_WITH_UNVERIFIED_LEG_IDENTITIES",
+  "foot_contact_mode": "Forward root translation with a following camera; evaluated world stance-slip is measured.",
+  "keyframe_phases": [
+    0,
+    0.15,
+    0.3,
+    0.45,
+    0.6,
+    0.65,
+    0.72,
+    0.825,
+    0.93,
+    1
+  ],
+  "minimum_knee_flexion_degrees": 8,
+  "maximum_knee_flexion_degrees": 135,
+  "ground_penetration_limit": 0.003,
+  "contact_height_tolerance": 0.003,
+  "legs": {
+    "Front.L": {
+      "stride": 0.13,
+      "lift": 0.056965786660634586,
+      "length": 0.37140072368310795,
+      "amplitude_scale": 1.0
+    },
+    "Front.R": {
+      "stride": 0.13,
+      "lift": 0.05845477618010358,
+      "length": 0.38853203986680435,
+      "amplitude_scale": 1.0
+    },
+    "MidFront.L": {
+      "stride": 0.13,
+      "lift": 0.05393513723700561,
+      "length": 0.33682479973632495,
+      "amplitude_scale": 1.0
+    },
+    "MidFront.R": {
+      "stride": 0.13,
+      "lift": 0.05522878306838543,
+      "length": 0.3474635664084236,
+      "amplitude_scale": 1.0
+    },
+    "MidRear.L": {
+      "stride": 0.13,
+      "lift": 0.06748802845484479,
+      "length": 0.42053528218755676,
+      "amplitude_scale": 1.0
+    },
+    "MidRear.R": {
+      "stride": 0.13,
+      "lift": 0.06782853936154036,
+      "length": 0.4208569480369599,
+      "amplitude_scale": 1.0
+    },
+    "Rear.L": {
+      "stride": 0.13,
+      "lift": 0.0804513743495787,
+      "length": 0.5346771864621118,
+      "amplitude_scale": 1.0
+    },
+    "Rear.R": {
+      "stride": 0.13,
+      "lift": 0.08046016467782147,
+      "length": 0.5381022233865163,
+      "amplitude_scale": 1.0
+    }
+  },
+  "lift_fraction": 0.23,
+  "contact_xy_tolerance": 0.0008,
+  "world_planted_support": true,
+  "camera": {
+    "offset": [
+      -8,
+      -0.5,
+      0.65
+    ]
+  },
+  "reference_video": "C:/Users/rober/Downloads/sidewalk8legBalisk.mp4",
+  "tracking_source": "sidewalk_reference_motion_01.json",
+  "stance_offsets": {
+    "Rear.L": [
+      0,
+      0.08,
+      0
+    ],
+    "Rear.R": [
+      0,
+      0.11,
+      0
+    ]
+  },
+  "correction_evidence": "Previous actual intermediate frames showed MidRear/Rear proxy intersections on both sides. Only rear foot placement is offset posteriorly; solver, body height and phase timing retained.",
+  "rear_clearance_evidence": "25 bounded candidate offsets tested across all 40 frames; additional posterior .05 BU was smallest tested zero-proxy-intersection, zero-unreachable candidate. No solver/axis changes."
+}

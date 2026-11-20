@@ -1,0 +1,194 @@
+{
+  "video": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\reference_walk_refinement_04\\balisk_eight_leg_review_5sec.mp4",
+  "comparison_video": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\reference_walk_refinement_04\\balisk_reference_comparison_5sec.mp4",
+  "decoded_frames": 120,
+  "fps": 24,
+  "duration_seconds": 5,
+  "pixel_change_by_second": [
+    {
+      "second": 1,
+      "minimum_changed_pixels_gt20": 25409,
+      "mean_changed_pixels_gt20": 33150.86956521739
+    },
+    {
+      "second": 2,
+      "minimum_changed_pixels_gt20": 24223,
+      "mean_changed_pixels_gt20": 28929.652173913044
+    },
+    {
+      "second": 3,
+      "minimum_changed_pixels_gt20": 24373,
+      "mean_changed_pixels_gt20": 33180.0
+    },
+    {
+      "second": 4,
+      "minimum_changed_pixels_gt20": 25599,
+      "mean_changed_pixels_gt20": 30545.17391304348
+    },
+    {
+      "second": 5,
+      "minimum_changed_pixels_gt20": 24288,
+      "mean_changed_pixels_gt20": 31498.695652173912
+    }
+  ],
+  "cycle_repeat_mean_pixel_error": 0.6266122504340278,
+  "reference": "C:\\Users\\rober\\Downloads\\sidewalk8legBalisk.mp4",
+  "reference_duration_seconds": 10.0,
+  "reference_fps": 24.0,
+  "alignment": {
+    "status": "APPROXIMATE_DISPLAY_ALIGNMENT_UNCALIBRATED",
+    "uniform_scale": 0.6062935690843422,
+    "translation_px": [
+      494.06223428158364,
+      172.92281764154217
+    ],
+    "reference_shoulder_estimate_px": [
+      929.0,
+      340.0
+    ],
+    "reference_ground_estimate_y": 602.0,
+    "blender_front_R_hip_px": [
+      1057.3089599609375,
+      379.0626311302185
+    ],
+    "blender_ground_y": 537.9115462303162,
+    "reference_crop": null,
+    "mirrored_or_rotated": false,
+    "limitation": "Two estimated image features only. Body proportions and depth differ; no independent 3D calibration."
+  },
+  "timing": "Same original elapsed time. Modeled 40-frame cycle approximately follows 38-40-frame front interval. No time warping.",
+  "reference_metrics": {
+    "V1_rear": {
+      "status": "UNVERIFIED_FLOW_PATCH",
+      "flow_consistent_frames": 82,
+      "body_relative_forward_range_px": 179.94649565065026,
+      "raw_vertical_range_px": 36.123117950571555,
+      "raw_image_lift_peaks": [
+        13,
+        59
+      ],
+      "peak_intervals_frames": [
+        46
+      ],
+      "correction": "Lift peaks use image ground, not vertical coordinates relative to the moving body patch."
+    },
+    "V2": {
+      "status": "UNVERIFIED_FLOW_PATCH",
+      "flow_consistent_frames": 120,
+      "body_relative_forward_range_px": 168.45074073163948,
+      "raw_vertical_range_px": 35.6269636938581,
+      "raw_image_lift_peaks": [
+        17,
+        64,
+        97
+      ],
+      "peak_intervals_frames": [
+        47,
+        33
+      ],
+      "correction": "Lift peaks use image ground, not vertical coordinates relative to the moving body patch."
+    },
+    "V3": {
+      "status": "UNVERIFIED_FLOW_PATCH",
+      "flow_consistent_frames": 120,
+      "body_relative_forward_range_px": 147.86838891495853,
+      "raw_vertical_range_px": 29.599599202473883,
+      "raw_image_lift_peaks": [
+        20,
+        66,
+        101
+      ],
+      "peak_intervals_frames": [
+        46,
+        35
+      ],
+      "correction": "Lift peaks use image ground, not vertical coordinates relative to the moving body patch."
+    },
+    "V4": {
+      "status": "UNVERIFIED_FLOW_PATCH",
+      "flow_consistent_frames": 120,
+      "body_relative_forward_range_px": 153.24244445536536,
+      "raw_vertical_range_px": 34.18086592769214,
+      "raw_image_lift_peaks": [
+        21,
+        66,
+        99
+      ],
+      "peak_intervals_frames": [
+        45,
+        33
+      ],
+      "correction": "Lift peaks use image ground, not vertical coordinates relative to the moving body patch."
+    },
+    "V5_front": {
+      "status": "UNVERIFIED_FLOW_PATCH",
+      "flow_consistent_frames": 116,
+      "body_relative_forward_range_px": 154.30515887107663,
+      "raw_vertical_range_px": 35.16880302924608,
+      "raw_image_lift_peaks": [
+        36,
+        75
+      ],
+      "peak_intervals_frames": [
+        39
+      ],
+      "correction": "Lift peaks use image ground, not vertical coordinates relative to the moving body patch."
+    }
+  },
+  "provisional_trajectory_comparison": {
+    "V1_rear": {
+      "candidate_leg": "Rear.R",
+      "identity": "UNVERIFIED",
+      "aligned_reference_forward_range_px": 109.12596096559037,
+      "blender_forward_range_px": 81.03878021240234,
+      "blender_lift_peaks": [
+        13,
+        53,
+        93
+      ],
+      "centered_trajectory_RMSE_px": 28.7729221742731,
+      "limitation": "Image patch and bone tail are different features. Offset-free style comparison, NOT calibrated anatomical reprojection error."
+    },
+    "V3": {
+      "candidate_leg": "MidRear.R",
+      "identity": "UNVERIFIED",
+      "aligned_reference_forward_range_px": 89.66274105998235,
+      "blender_forward_range_px": 81.03866577148438,
+      "blender_lift_peaks": [
+        20,
+        60,
+        100
+      ],
+      "centered_trajectory_RMSE_px": 21.099728231363095,
+      "limitation": "Image patch and bone tail are different features. Offset-free style comparison, NOT calibrated anatomical reprojection error."
+    },
+    "V4": {
+      "candidate_leg": "MidFront.R",
+      "identity": "UNVERIFIED",
+      "aligned_reference_forward_range_px": 92.86516222116728,
+      "blender_forward_range_px": 82.64907836914062,
+      "blender_lift_peaks": [
+        21,
+        61,
+        101
+      ],
+      "centered_trajectory_RMSE_px": 19.199656244021984,
+      "limitation": "Image patch and bone tail are different features. Offset-free style comparison, NOT calibrated anatomical reprojection error."
+    },
+    "V5_front": {
+      "candidate_leg": "Front.R",
+      "identity": "UNVERIFIED",
+      "aligned_reference_forward_range_px": 93.55070167373287,
+      "blender_forward_range_px": 81.21139526367188,
+      "blender_lift_peaks": [
+        36,
+        76,
+        116
+      ],
+      "centered_trajectory_RMSE_px": 16.845696041453326,
+      "limitation": "Image patch and bone tail are different features. Offset-free style comparison, NOT calibrated anatomical reprojection error."
+    }
+  },
+  "visual_status": "REQUIRES_INSPECTION",
+  "exact_video_match": "NOT_CLAIMED"
+}

@@ -1,0 +1,558 @@
+{
+  "status": "REVIEW_CANDIDATE_RENDERED_AND_INSPECTED",
+  "source": "cmai_eight_leg_standing_fit_attempt2.blend",
+  "preserved_high_standing_file": "data/generated/standing_attempt2_refit_01/standing.blend",
+  "walking_body_height_change_from_high_standing_BU": -0.03,
+  "changes": [
+    "Recovered saved lower-body test without restarting the solver or rig",
+    "Retained shared .13 BU stride on all eight legs and original per-leg bend planes",
+    "Moved only rear-leg stance positions to clear measured rear/middle proxy collisions",
+    "Added continuous root travel .005 BU/frame with a following camera",
+    "Validated saved Action and original mesh across frames 1..121",
+    "Replaced incorrect half-image reference crop with full-width approximate shoulder/ground alignment",
+    "Separated image-ground lift measurements from body-relative foot travel"
+  ],
+  "original_mesh_weights_rest_bones_preserved": true,
+  "rig_bone_count": 38,
+  "source_geometry_sha256": "ec5de9cb7a18a2021eb0973f3f61f7739dbb406f236ce2cc7229deff8f81c0d1",
+  "standing_ground_max_error_BU": 5.039294393346938e-05,
+  "maximum_foot_penetration_BU": 0.0004947112721370994,
+  "maximum_planted_float_BU": 0.0009533856320761702,
+  "maximum_planted_bone_tip_slip_per_frame_BU": 0.0008980085066529456,
+  "maximum_planted_sole_vertex_slip_per_frame_BU": 0.0015717677203503917,
+  "maximum_per_leg_median_sole_slip_BU": 0.00016586633767128948,
+  "proxy_intersections_across_cycle": 0,
+  "full_mesh_collision": "UNVERIFIED",
+  "loop_pose_mesh_error_BU": 0.0,
+  "loop_pose_bone_error": 0.0,
+  "loop_convention": "40-frame pose cycle repeated 3 times; continuous world root travel. Frame121 matches frame1 relative to camera, not at the same world location.",
+  "mesh_edge_review": [
+    {
+      "frame": 1,
+      "p99_edge_ratio_to_walk_frame1": 1.0,
+      "edges_over_3x": 0,
+      "max_edge_extension": 0.0
+    },
+    {
+      "frame": 11,
+      "p99_edge_ratio_to_walk_frame1": 1.1523316008844073,
+      "edges_over_3x": 25,
+      "max_edge_extension": 0.008706422546944918
+    },
+    {
+      "frame": 21,
+      "p99_edge_ratio_to_walk_frame1": 1.1969553628947456,
+      "edges_over_3x": 15,
+      "max_edge_extension": 0.013446116061589956
+    },
+    {
+      "frame": 31,
+      "p99_edge_ratio_to_walk_frame1": 1.1884366264805806,
+      "edges_over_3x": 43,
+      "max_edge_extension": 0.010709917074616212
+    },
+    {
+      "frame": 41,
+      "p99_edge_ratio_to_walk_frame1": 1.0000500728235429,
+      "edges_over_3x": 0,
+      "max_edge_extension": 2.1815143554267113e-07
+    },
+    {
+      "frame": 61,
+      "p99_edge_ratio_to_walk_frame1": 1.1969554218616956,
+      "edges_over_3x": 15,
+      "max_edge_extension": 0.013446094974240479
+    },
+    {
+      "frame": 81,
+      "p99_edge_ratio_to_walk_frame1": 1.0000733267877717,
+      "edges_over_3x": 0,
+      "max_edge_extension": 2.890729798570718e-07
+    },
+    {
+      "frame": 101,
+      "p99_edge_ratio_to_walk_frame1": 1.1969478908760172,
+      "edges_over_3x": 15,
+      "max_edge_extension": 0.013446052799576405
+    },
+    {
+      "frame": 120,
+      "p99_edge_ratio_to_walk_frame1": 1.026258264337541,
+      "edges_over_3x": 2,
+      "max_edge_extension": 0.002607686122825326
+    },
+    {
+      "frame": 121,
+      "p99_edge_ratio_to_walk_frame1": 1.0000937922898727,
+      "edges_over_3x": 0,
+      "max_edge_extension": 3.5601377327133636e-07
+    }
+  ],
+  "ground_contact_per_leg": {
+    "Front.L": {
+      "foot_travel_xyz": [
+        0.01301334798336029,
+        0.12999999523162842,
+        0.06376132369041443
+      ],
+      "max_mesh_displacement": 0.09952615220422682,
+      "max_clearance": 0.05681095568678596,
+      "max_penetration": 0.0004947112721370994,
+      "max_contact_float": 0.0007458773666523255,
+      "knee_flexion_range": [
+        50.340893400625475,
+        110.24486944073638
+      ],
+      "min_bend_dot": 0.9999815560877323,
+      "max_foot_orientation_change": 2.87879709600026,
+      "max_stance_motion_per_frame": 0.005000710577258809,
+      "max_belt_compensated_slip_per_frame": 2.8021552465387906e-06,
+      "max_length_error": 2.2629440091237463e-07,
+      "numerical_status": "PASS",
+      "world_stance_slip": {
+        "maximum_per_frame": 2.8020523246629618e-06,
+        "mean_per_frame": 4.417785789490203e-07
+      },
+      "sole_vertex_slip": {
+        "maximum_per_frame": 0.0008357828849422991,
+        "median_per_frame": 0.00016586633767128948
+      }
+    },
+    "Front.R": {
+      "foot_travel_xyz": [
+        0.013036146759986877,
+        0.130179762840271,
+        0.065167635679245
+      ],
+      "max_mesh_displacement": 0.13500257056493079,
+      "max_clearance": 0.058406601341229464,
+      "max_penetration": 0.0004506154339551094,
+      "max_contact_float": 0.000892456041512335,
+      "knee_flexion_range": [
+        53.1144419772709,
+        111.50191111596388
+      ],
+      "min_bend_dot": 0.99994439445436,
+      "max_foot_orientation_change": 2.6304396783909603,
+      "max_stance_motion_per_frame": 0.005000830717202665,
+      "max_belt_compensated_slip_per_frame": 3.3094703302153268e-06,
+      "max_length_error": 2.072806035702257e-07,
+      "numerical_status": "PASS",
+      "world_stance_slip": {
+        "maximum_per_frame": 3.3426795485706526e-06,
+        "mean_per_frame": 4.694192771142616e-07
+      },
+      "sole_vertex_slip": {
+        "maximum_per_frame": 0.0006726067562870883,
+        "median_per_frame": 8.83495409225459e-05
+      }
+    },
+    "MidFront.L": {
+      "foot_travel_xyz": [
+        0.007889211177825928,
+        0.12999975681304932,
+        0.05508500337600708
+      ],
+      "max_mesh_displacement": 0.08906871828424122,
+      "max_clearance": 0.054541011571521025,
+      "max_penetration": 0.0004714746157553906,
+      "max_contact_float": 0.0007574414232515703,
+      "knee_flexion_range": [
+        53.78623206327667,
+        108.39433896814815
+      ],
+      "min_bend_dot": 0.9999969340860844,
+      "max_foot_orientation_change": 1.8507001601004271,
+      "max_stance_motion_per_frame": 0.005002379408564068,
+      "max_belt_compensated_slip_per_frame": 6.712350376797525e-06,
+      "max_length_error": 2.339646451021693e-07,
+      "numerical_status": "PASS",
+      "world_stance_slip": {
+        "maximum_per_frame": 6.709759751002986e-06,
+        "mean_per_frame": 7.770784371147135e-07
+      },
+      "sole_vertex_slip": {
+        "maximum_per_frame": 0.00030036516311150106,
+        "median_per_frame": 1.2286204211293578e-07
+      }
+    },
+    "MidFront.R": {
+      "foot_travel_xyz": [
+        0.00301244854927063,
+        0.13263636827468872,
+        0.058232516050338745
+      ],
+      "max_mesh_displacement": 0.07089569452838358,
+      "max_clearance": 0.05661842655635019,
+      "max_penetration": 0.0003754707415859482,
+      "max_contact_float": 0.0004940248261361135,
+      "knee_flexion_range": [
+        53.66231877135431,
+        107.83480304115153
+      ],
+      "min_bend_dot": 0.9999972507357597,
+      "max_foot_orientation_change": 2.7360420869221738,
+      "max_stance_motion_per_frame": 0.005895050049644494,
+      "max_belt_compensated_slip_per_frame": 0.0008978944021966392,
+      "max_length_error": 2.101344666466387e-07,
+      "numerical_status": "PASS",
+      "world_stance_slip": {
+        "maximum_per_frame": 0.0008980085066529456,
+        "mean_per_frame": 0.00013515657943616164
+      },
+      "sole_vertex_slip": {
+        "maximum_per_frame": 0.0015717677203503917,
+        "median_per_frame": 2.402760305215034e-07
+      }
+    },
+    "MidRear.L": {
+      "foot_travel_xyz": [
+        0.002349853515625,
+        0.1309681534767151,
+        0.06649598479270935
+      ],
+      "max_mesh_displacement": 0.11278762450791736,
+      "max_clearance": 0.06764326751802288,
+      "max_penetration": 0.0003949673544151322,
+      "max_contact_float": 0.0009533856320761702,
+      "knee_flexion_range": [
+        71.56009866113153,
+        115.37535237541313
+      ],
+      "min_bend_dot": 0.9999848157167435,
+      "max_foot_orientation_change": 0.8485698425168375,
+      "max_stance_motion_per_frame": 0.0050859415137730355,
+      "max_belt_compensated_slip_per_frame": 0.00011011837541154887,
+      "max_length_error": 3.7519081957926304e-07,
+      "numerical_status": "PASS",
+      "world_stance_slip": {
+        "maximum_per_frame": 0.00011011475789936761,
+        "mean_per_frame": 1.4287055596320496e-05
+      },
+      "sole_vertex_slip": {
+        "maximum_per_frame": 0.0005236146105271328,
+        "median_per_frame": 6.770182639278745e-05
+      }
+    },
+    "MidRear.R": {
+      "foot_travel_xyz": [
+        0.010346651077270508,
+        0.12999975681304932,
+        0.06549753248691559
+      ],
+      "max_mesh_displacement": 0.07683646139407915,
+      "max_clearance": 0.0677994185256024,
+      "max_penetration": 0.0002623262077542099,
+      "max_contact_float": 0.000792541549491127,
+      "knee_flexion_range": [
+        79.35744944780726,
+        120.54685742624497
+      ],
+      "min_bend_dot": 0.9999926835298538,
+      "max_foot_orientation_change": 3.6866872389550007,
+      "max_stance_motion_per_frame": 0.0051441113750224435,
+      "max_belt_compensated_slip_per_frame": 0.00023807500973134098,
+      "max_length_error": 2.0519402310625878e-07,
+      "numerical_status": "PASS",
+      "world_stance_slip": {
+        "maximum_per_frame": 0.00023808387269686978,
+        "mean_per_frame": 5.594770195335624e-05
+      },
+      "sole_vertex_slip": {
+        "maximum_per_frame": 0.0011174349931242955,
+        "median_per_frame": 8.970799652197658e-05
+      }
+    },
+    "Rear.L": {
+      "foot_travel_xyz": [
+        0.018499791622161865,
+        0.1299996369634755,
+        0.0810074582695961
+      ],
+      "max_mesh_displacement": 0.12679629300697723,
+      "max_clearance": 0.08038452046827874,
+      "max_penetration": 0.0003587120470303906,
+      "max_contact_float": 0.0008340816197729972,
+      "knee_flexion_range": [
+        75.06467555445424,
+        118.93261734799331
+      ],
+      "min_bend_dot": 0.9999344125390053,
+      "max_foot_orientation_change": 3.801679450047689,
+      "max_stance_motion_per_frame": 0.0050380460490435635,
+      "max_belt_compensated_slip_per_frame": 9.592987864907142e-05,
+      "max_length_error": 3.702355175216887e-07,
+      "numerical_status": "PASS",
+      "world_stance_slip": {
+        "maximum_per_frame": 9.593458307067682e-05,
+        "mean_per_frame": 2.3122188622882196e-05
+      },
+      "sole_vertex_slip": {
+        "maximum_per_frame": 0.00015206667891091923,
+        "median_per_frame": 6.250946456620361e-06
+      }
+    },
+    "Rear.R": {
+      "foot_travel_xyz": [
+        0.012781977653503418,
+        0.1300000287592411,
+        0.08087479323148727
+      ],
+      "max_mesh_displacement": 0.10694336987555642,
+      "max_clearance": 0.08040506884650592,
+      "max_penetration": 0.000312375431212486,
+      "max_contact_float": 0.0005793268854578093,
+      "knee_flexion_range": [
+        28.323109252550722,
+        97.92004580044767
+      ],
+      "min_bend_dot": 0.9999724524095654,
+      "max_foot_orientation_change": 2.1558531619793215,
+      "max_stance_motion_per_frame": 0.005064968145278249,
+      "max_belt_compensated_slip_per_frame": 6.527091667177704e-05,
+      "max_length_error": 2.0033717351708447e-07,
+      "numerical_status": "PASS",
+      "world_stance_slip": {
+        "maximum_per_frame": 6.527554988414787e-05,
+        "mean_per_frame": 8.478607359199872e-06
+      },
+      "sole_vertex_slip": {
+        "maximum_per_frame": 0.0003549629661085743,
+        "median_per_frame": 1.228554769419031e-07
+      }
+    }
+  },
+  "remaining_mismatches": [
+    "Reference overlapping-leg identities remain unverified; hidden-side phases are modeled",
+    "Reference body, tail and limb proportions differ from the original preserved model",
+    "Camera comparison is approximate display alignment, not verified 3D calibration",
+    "Reference front interval about38-40 frames vs fixed40-frame animation; other intervals vary",
+    "Localized mesh edge stretch remains; full surface self-intersection validation not completed"
+  ],
+  "camera_relative_joint_loop_error_px": 0.00016561083781063324,
+  "stance_feet_range": [
+    4,
+    7
+  ],
+  "visual_assessment": {
+    "visible_animation": "PASS: distinct planted, lifted and forward-swing mesh positions in decoded MP4 frames across all five seconds",
+    "reference_similarity": "PARTIAL_UNVERIFIED",
+    "observed_differences": [
+      "Original body and tail proportions remain substantially different",
+      "Rear swing lift is exaggerated relative to the image reference",
+      "Reference middle/rear cadence varies and drifts from the fixed40-frame loop",
+      "Near-side correspondence is provisional and far-side phase offsets are not measured"
+    ],
+    "not_claimed": [
+      "Exact reference match",
+      "Verified identities of eight reference legs",
+      "Full surface collision clearance",
+      "Dynamic balance / center-of-mass validation"
+    ]
+  },
+  "media_validation": {
+    "video": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\reference_walk_refinement_04\\balisk_eight_leg_review_5sec.mp4",
+    "comparison_video": "C:\\Users\\rober\\CreatureMotionAI\\data\\generated\\reference_walk_refinement_04\\balisk_reference_comparison_5sec.mp4",
+    "decoded_frames": 120,
+    "fps": 24,
+    "duration_seconds": 5,
+    "pixel_change_by_second": [
+      {
+        "second": 1,
+        "minimum_changed_pixels_gt20": 25409,
+        "mean_changed_pixels_gt20": 33150.86956521739
+      },
+      {
+        "second": 2,
+        "minimum_changed_pixels_gt20": 24223,
+        "mean_changed_pixels_gt20": 28929.652173913044
+      },
+      {
+        "second": 3,
+        "minimum_changed_pixels_gt20": 24373,
+        "mean_changed_pixels_gt20": 33180.0
+      },
+      {
+        "second": 4,
+        "minimum_changed_pixels_gt20": 25599,
+        "mean_changed_pixels_gt20": 30545.17391304348
+      },
+      {
+        "second": 5,
+        "minimum_changed_pixels_gt20": 24288,
+        "mean_changed_pixels_gt20": 31498.695652173912
+      }
+    ],
+    "cycle_repeat_mean_pixel_error": 0.6266122504340278,
+    "reference": "C:\\Users\\rober\\Downloads\\sidewalk8legBalisk.mp4",
+    "reference_duration_seconds": 10.0,
+    "reference_fps": 24.0,
+    "alignment": {
+      "status": "APPROXIMATE_DISPLAY_ALIGNMENT_UNCALIBRATED",
+      "uniform_scale": 0.6062935690843422,
+      "translation_px": [
+        494.06223428158364,
+        172.92281764154217
+      ],
+      "reference_shoulder_estimate_px": [
+        929.0,
+        340.0
+      ],
+      "reference_ground_estimate_y": 602.0,
+      "blender_front_R_hip_px": [
+        1057.3089599609375,
+        379.0626311302185
+      ],
+      "blender_ground_y": 537.9115462303162,
+      "reference_crop": null,
+      "mirrored_or_rotated": false,
+      "limitation": "Two estimated image features only. Body proportions and depth differ; no independent 3D calibration."
+    },
+    "timing": "Same original elapsed time. Modeled 40-frame cycle approximately follows 38-40-frame front interval. No time warping.",
+    "reference_metrics": {
+      "V1_rear": {
+        "status": "UNVERIFIED_FLOW_PATCH",
+        "flow_consistent_frames": 82,
+        "body_relative_forward_range_px": 179.94649565065026,
+        "raw_vertical_range_px": 36.123117950571555,
+        "raw_image_lift_peaks": [
+          13,
+          59
+        ],
+        "peak_intervals_frames": [
+          46
+        ],
+        "correction": "Lift peaks use image ground, not vertical coordinates relative to the moving body patch."
+      },
+      "V2": {
+        "status": "UNVERIFIED_FLOW_PATCH",
+        "flow_consistent_frames": 120,
+        "body_relative_forward_range_px": 168.45074073163948,
+        "raw_vertical_range_px": 35.6269636938581,
+        "raw_image_lift_peaks": [
+          17,
+          64,
+          97
+        ],
+        "peak_intervals_frames": [
+          47,
+          33
+        ],
+        "correction": "Lift peaks use image ground, not vertical coordinates relative to the moving body patch."
+      },
+      "V3": {
+        "status": "UNVERIFIED_FLOW_PATCH",
+        "flow_consistent_frames": 120,
+        "body_relative_forward_range_px": 147.86838891495853,
+        "raw_vertical_range_px": 29.599599202473883,
+        "raw_image_lift_peaks": [
+          20,
+          66,
+          101
+        ],
+        "peak_intervals_frames": [
+          46,
+          35
+        ],
+        "correction": "Lift peaks use image ground, not vertical coordinates relative to the moving body patch."
+      },
+      "V4": {
+        "status": "UNVERIFIED_FLOW_PATCH",
+        "flow_consistent_frames": 120,
+        "body_relative_forward_range_px": 153.24244445536536,
+        "raw_vertical_range_px": 34.18086592769214,
+        "raw_image_lift_peaks": [
+          21,
+          66,
+          99
+        ],
+        "peak_intervals_frames": [
+          45,
+          33
+        ],
+        "correction": "Lift peaks use image ground, not vertical coordinates relative to the moving body patch."
+      },
+      "V5_front": {
+        "status": "UNVERIFIED_FLOW_PATCH",
+        "flow_consistent_frames": 116,
+        "body_relative_forward_range_px": 154.30515887107663,
+        "raw_vertical_range_px": 35.16880302924608,
+        "raw_image_lift_peaks": [
+          36,
+          75
+        ],
+        "peak_intervals_frames": [
+          39
+        ],
+        "correction": "Lift peaks use image ground, not vertical coordinates relative to the moving body patch."
+      }
+    },
+    "provisional_trajectory_comparison": {
+      "V1_rear": {
+        "candidate_leg": "Rear.R",
+        "identity": "UNVERIFIED",
+        "aligned_reference_forward_range_px": 109.12596096559037,
+        "blender_forward_range_px": 81.03878021240234,
+        "blender_lift_peaks": [
+          13,
+          53,
+          93
+        ],
+        "centered_trajectory_RMSE_px": 28.7729221742731,
+        "limitation": "Image patch and bone tail are different features. Offset-free style comparison, NOT calibrated anatomical reprojection error."
+      },
+      "V3": {
+        "candidate_leg": "MidRear.R",
+        "identity": "UNVERIFIED",
+        "aligned_reference_forward_range_px": 89.66274105998235,
+        "blender_forward_range_px": 81.03866577148438,
+        "blender_lift_peaks": [
+          20,
+          60,
+          100
+        ],
+        "centered_trajectory_RMSE_px": 21.099728231363095,
+        "limitation": "Image patch and bone tail are different features. Offset-free style comparison, NOT calibrated anatomical reprojection error."
+      },
+      "V4": {
+        "candidate_leg": "MidFront.R",
+        "identity": "UNVERIFIED",
+        "aligned_reference_forward_range_px": 92.86516222116728,
+        "blender_forward_range_px": 82.64907836914062,
+        "blender_lift_peaks": [
+          21,
+          61,
+          101
+        ],
+        "centered_trajectory_RMSE_px": 19.199656244021984,
+        "limitation": "Image patch and bone tail are different features. Offset-free style comparison, NOT calibrated anatomical reprojection error."
+      },
+      "V5_front": {
+        "candidate_leg": "Front.R",
+        "identity": "UNVERIFIED",
+        "aligned_reference_forward_range_px": 93.55070167373287,
+        "blender_forward_range_px": 81.21139526367188,
+        "blender_lift_peaks": [
+          36,
+          76,
+          116
+        ],
+        "centered_trajectory_RMSE_px": 16.845696041453326,
+        "limitation": "Image patch and bone tail are different features. Offset-free style comparison, NOT calibrated anatomical reprojection error."
+      }
+    },
+    "visual_status": "REQUIRES_INSPECTION",
+    "exact_video_match": "NOT_CLAIMED"
+  },
+  "deliverables": {
+    "standing_blend": "data\\generated\\reference_walk_refinement_04\\standing.blend",
+    "standing_comparison": "data\\generated\\reference_walk_refinement_04\\standing_comparison.png",
+    "walk_blend": "data\\generated\\reference_walk_refinement_04\\eight_leg_walk.blend",
+    "walk_video": "data\\generated\\reference_walk_refinement_04\\balisk_eight_leg_review_5sec.mp4",
+    "comparison_video": "data\\generated\\reference_walk_refinement_04\\balisk_reference_comparison_5sec.mp4",
+    "decoded_contact_sheet": "data\\generated\\reference_walk_refinement_04\\encoded_video_contact_sheet.png",
+    "saved_action_validation": "data\\generated\\reference_walk_refinement_04\\saved_action_validation.json",
+    "walk_validation": "data\\generated\\reference_walk_refinement_04\\walk_validation.json",
+    "configuration": "data\\generated\\reference_walk_refinement_04\\walk_configuration.json"
+  }
+}
