@@ -241,4 +241,128 @@ After approval of this plan, implement the next dual-camera stage:
 6. Add split-screen MP4 import, panel splitting, and consistency checks.
 7. Do not triangulate external video until the Blender known-motion exam passes.
 
+## Isolated foot-contact milestone — 2026-11-18
+
+Implemented and measured a reusable, leg-count-independent contact-state layer
+without changing the original Balisk loop or rig:
+
+- `creature_motion_ai/contact_states.py`: confidence-weighted STANCE, SWING,
+  and UNCERTAIN states, separate entry/exit thresholds, confirmation frames,
+  and world-space anchor release when observations or constraints fail.
+- `creature_motion_ai/contact_lock.py`: fixed weighted underside-mesh sole
+  patches and generic per-limb contact helpers. The Blender experiment supplies
+  anatomy-profile chains and reuses the existing rest-relative two-link IK;
+  it does not apply whole-body root correction.
+- `tools/run_contact_lock_experiment.py` and
+  `tools/validate_contact_lock_readback.py`: isolated candidate generation and
+  fresh saved-file before/after measurements. Original source remains intact.
+- `tools/render_contact_lock_candidate.py` and
+  `tools/make_contact_lock_comparison.py`: same-camera 5-second visual preview.
+
+The candidate reduces mean stance sole drift on all eight legs (about 79% to
+99.97% by fixed mesh-patch measurements). Rest-relative segment lengths and
+knee-bend direction pass; all eight sole patches stay within the 3 mm ground
+tolerance; loop endpoint error is zero. Capsule proxy checks report no hits.
+Positive swing lift is **UNVERIFIED** because the baseline produces few confident
+swing frames and sub-millimeter lift. Exact mesh self-collision and center-of-
+mass support stability are also **UNVERIFIED**; proxy results do not establish
+those properties. See `contact_lock_v1/contact_lock_comparison.json` for all
+per-leg measurements and limitations. Candidate file and preview are in the
+same `contact_lock_v1` output folder beside the preserved baseline.
+
+Next: improve swing/contact observability and positive clearance, then add exact
+evaluated-mesh collision validation and support-polygon stability before making
+the contact layer a default add-on action. Do not treat the current candidate as
+reference-video motion capture; it refines the existing procedural loop.
+
 No detector weights, Google Vids generation, new skeleton, IK setup, or full-video animation should be started before that gate passes.
+
+## Reference-guided stepping gate — 2026-11-18
+
+Added a reusable 2D step-event evidence adapter:
+
+- `creature_motion_ai/reference_step_events.py` measures hip-relative knee/foot
+  paths and reports stance/swing *candidates* from explicitly reviewed points.
+- `tools/analyze_reference_step_events.py` writes a per-frame diagnostic report.
+- The adapter requires a hash-bound approval manifest containing the approved
+  leg identity, `identity_verified: true`, and the exact tracking-file SHA-256
+  before any observations become eligible for constrained fitting. Prediction
+  rows, hidden/missing joints, and mismatched approval manifests remain
+  provisional; approval only makes the 2D events eligible for 3D fitting and
+  does not authorize Action creation. This code emits neither Blender keys nor
+  3D contacts.
+- `tools/test_reference_step_events.py` checks that prediction-only tracks and
+  wrong-leg approvals are rejected, while reviewed relative foot lift is
+  recognized as a candidate event.
+
+The existing `data/generated/dlc_tracking_best30/leg_rear_left_tracking.json`
+is still a DeepLabCut prediction track, not an approved Rear.L observation set.
+Therefore the current track can quantify candidate 2D motion but cannot
+truthfully drive a reference-guided Action. The previously saved planar Rear.L
+test is not a substitute: its report identifies leg identity and camera-space
+to-world motion as provisional. No new Action or preview was generated from
+those unverified points. The next valid input is a manually reviewed, identity-
+confirmed Rear.L track; after that, events can be fitted through calibrated 3D
+sole points and the existing `FootContactTracker`/IK pipeline.
+
+## Multi-creature quadruped compatibility test — 2026-11-19
+
+Added one profile-driven Blender setup panel while leaving the existing Balisk
+panels and solvers registered:
+
+- `creature_motion_ai/rig_profiles.py` now proposes numbered limb chains only
+  when their parent hierarchy is contiguous. It also proposes body, head, wing,
+  and tail groups from names. These are editable proposals, not automatic truth.
+- `creature_motion_ai/anatomy_profile_ui.py` adds the `Multi-Creature Setup`
+  panel. Users can correct chains/roles, explicitly confirm each limb identity,
+  and save a new versioned profile. It offers separate existing-Action and
+  reference-video modes; only the video mode requires a video path.
+- Existing-Action mode has a read-only analysis operator. It measures per-limb
+  bone-head paths and distal endpoint bounds and restores the armature's assigned
+  Action and frame afterward. It does not edit keys or claim contact, collision,
+  or video validation.
+- `tools/test_multicreature_anatomy_ui.py` smoke-tests the operators in Blender.
+  The Balisk panels remain registered; no Balisk profile/action was used in the
+  dragon contact test.
+- `tools/test_balisk_profile_compat.py` confirmed the new proposer still finds
+  all eight contiguous leg chains on `original_static_standing.blend` (38 bones).
+
+Dragon test copy: `data/generated/dragon_quadruped_compatibility/`
+
+- Read-only structure audit found a 47-bone armature, four contiguous
+  three-bone leg chains, a weighted skinned mesh, and separate `FLAP`/`RUN`
+  Actions. `Move_Scissor_Offset` is 73 frames at 30 fps. Wings have no motion in
+  that Action. The original dragon file was not edited.
+- A confirmed editable dragon profile and a no-video workflow report were
+  written in `cmai_anatomy_profiles/` and `cmai_anatomy_reports/`.
+- The Blender UI smoke test passed on the isolated copy: four legs were
+  analyzed for frames 1–73, the source Action and current frame were restored,
+  and `action_modified` was false. Report:
+  `cmai_anatomy_reports/action_analysis_20261119_145257.json`.
+- Contact-lock trial output is in `contact_trial/`. The source Action and a
+  separate candidate Action/file are both retained. A same-camera source versus
+  candidate preview was rendered at native timing:
+  `contact_trial/dragon_move_scissor_before_after.mp4` (73 frames, 30 fps,
+  2.43 seconds; not stretched or looped).
+
+Contact result: **NOT PASSED**. The front terminal-weighted patches had small
+reductions in total stance path (7.3% left, 6.4% right), but their worst
+per-frame movement increased from about 0.0142 to 0.0439 world units. Both rear
+chains remained UNCERTAIN for all 73 frames, and minimum support was zero. The
+report marks ground penetration, rest bone lengths, proxy-collision checks, and
+endpoint continuity as passing for this candidate, while support and overall
+foot-slip criteria fail or remain unverified. Ground height was inferred from
+low terminal-weighted surface samples because the scene has no ground object;
+the detected regions are candidate underside patches, not artist-authored
+soles. Segment proxies do not prove that the full mesh has no self-intersection.
+The selected `Move_Scissor_Offset` is a flying/scissoring pose rather than a
+grounded walking action, so it is a poor contact-lock benchmark. Keep the
+candidate as a diagnostic artifact, not as an improved or validated
+replacement.
+
+This demonstrates that anatomy-profile setup and read-only Action analysis work
+on a second, four-legged rig. It does **not** demonstrate quadruped contact
+locking, reference-video animation on the dragon, or arbitrary-rig auto-detection.
+The next useful quadruped test needs a grounded Action or explicitly defined
+ground plane/contact regions; do not rerun contact locking on this airborne
+Action as if it were a walking test.
