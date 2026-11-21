@@ -16,7 +16,7 @@ except ModuleNotFoundError:  # Allow portable analysis/solver modules outside Bl
     bpy = None
 
 if bpy is not None:
-    from . import operators, panel, skeleton_operator, animation_operator, landmark_review, collision_proxies, reference_walk_ui, anatomy_profile_ui
+    from . import operators, panel, skeleton_operator, animation_operator, landmark_review, collision_proxies, reference_walk_ui, anatomy_profile_ui, action_extrema, video_pose_waypoints
 
 
 def register():
@@ -30,12 +30,16 @@ def register():
     panel.register()
     reference_walk_ui.register()
     anatomy_profile_ui.register()
+    action_extrema.register()
+    video_pose_waypoints.register()
 
 
 def unregister():
     if bpy is None:
         return
     anatomy_profile_ui.unregister()
+    action_extrema.unregister()
+    video_pose_waypoints.unregister()
     reference_walk_ui.unregister()
     panel.unregister()
     landmark_review.unregister()
